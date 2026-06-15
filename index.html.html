@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSH IT Helpdesk</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;display:flex;height:100vh;overflow:hidden}
+a{color:inherit;text-decoration:none}
+.sidebar{width:220px;background:#161b2e;border-right:1px solid #1e2540;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:20px 16px 16px;border-bottom:1px solid #1e2540}
+.logo-text{font-size:15px;font-weight:700;color:#f0b429;letter-spacing:.5px}
+.logo-sub{font-size:11px;color:#64748b;margin-top:2px}
+.nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-section{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px;padding:8px 8px 4px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;color:#94a3b8;transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:#1e2540;color:#e2e8f0}
+.nav-item.active{background:#1e3a5f;color:#60a5fa}
+.nav-item i{font-size:16px;width:20px;text-align:center}
+.badge{margin-left:auto;background:#1e3a5f;color:#60a5fa;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
+.badge.red{background:#3b1f1f;color:#f87171}
+.sidebar-user{padding:12px 16px;border-top:1px solid #1e2540;display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#60a5fa;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:56px;background:#161b2e;border-bottom:1px solid #1e2540;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;flex:1}
+.search-box{display:flex;align-items:center;gap:8px;background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:6px 12px;width:240px}
+.search-box input{background:none;border:none;outline:none;color:#e2e8f0;font-size:13px;width:100%}
+.search-box input::placeholder{color:#475569}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:#1d4ed8;color:#fff}
+.btn-primary:hover{background:#1e40af}
+.btn-ghost{background:transparent;color:#94a3b8;border:1px solid #1e2540}
+.btn-ghost:hover{background:#1e2540;color:#e2e8f0}
+.lang-toggle{display:flex;background:#0f1117;border:1px solid #1e2540;border-radius:8px;overflow:hidden;flex-shrink:0}
+.lang-btn{padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;transition:all .15s}
+.lang-btn.active{background:#1e3a5f;color:#60a5fa}
+.content{flex:1;overflow-y:auto;padding:24px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:16px 18px}
+.stat-label{font-size:12px;color:#64748b;margin-bottom:6px}
+.stat-value{font-size:24px;font-weight:700}
+.stat-value.blue{color:#60a5fa}
+.stat-value.yellow{color:#fbbf24}
+.stat-value.green{color:#34d399}
+.stat-value.red{color:#f87171}
+.stat-trend{font-size:11px;color:#475569;margin-top:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
+.priority-item{margin-bottom:10px}
+.priority-label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;color:#94a3b8}
+.bar-track{background:#1e2540;border-radius:4px;height:6px}
+.bar-fill{height:6px;border-radius:4px}
+.ticket-table{width:100%;border-collapse:collapse}
+.ticket-table th{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid #1e2540;text-align:left;font-weight:600}
+.ticket-row{cursor:pointer;transition:background .1s}
+.ticket-row:hover td{background:#1a2236}
+.ticket-row td{padding:10px 10px;font-size:13px;border-bottom:1px solid #0f1117;vertical-align:middle}
+.tid{color:#60a5fa;font-size:12px;font-weight:600}
+.tag{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:5px;font-weight:600}
+.tag-urgent{background:#3b1f1f;color:#f87171}
+.tag-high{background:#3b2e1e;color:#fbbf24}
+.tag-medium{background:#1e2e3b;color:#60a5fa}
+.tag-low{background:#1e3b2e;color:#34d399}
+.tag-open{background:#1e2e3b;color:#60a5fa}
+.tag-pending{background:#3b2e1e;color:#fbbf24}
+.tag-resolved{background:#1e3b2e;color:#34d399}
+.tag-closed{background:#1e2540;color:#64748b}
+.agent-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8}
+.agent-dot{width:22px;height:22px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#60a5fa}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #1e2540;background:transparent;color:#94a3b8;transition:all .1s}
+.filter-btn.active{background:#1e3a5f;color:#60a5fa;border-color:#1e3a5f}
+.filter-btn:hover{border-color:#334155;color:#e2e8f0}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#161b2e;border:1px solid #1e2540;border-radius:16px;width:560px;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid #1e2540}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{padding:22px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:12.5px;color:#94a3b8;margin-bottom:6px;display:block;font-weight:500}
+.form-input{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:13.5px;outline:none;font-family:inherit;transition:border .15s}
+.form-input:focus{border-color:#3b82f6}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+textarea.form-input{min-height:90px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{padding:16px 22px;border-top:1px solid #1e2540;display:flex;justify-content:flex-end;gap:8px}
+.detail-panel{display:none;position:fixed;right:0;top:0;bottom:0;width:520px;background:#161b2e;border-left:1px solid #1e2540;z-index:50;flex-direction:column;overflow:hidden}
+.detail-panel.open{display:flex}
+.detail-header{padding:16px 20px;border-bottom:1px solid #1e2540;display:flex;justify-content:space-between;align-items:center}
+.detail-body{flex:1;overflow-y:auto;padding:20px}
+.detail-section{margin-bottom:20px}
+.detail-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#475569;font-weight:600;margin-bottom:10px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:8px}
+.info-item{display:flex;flex-direction:column;gap:4px}
+.info-item label{font-size:11px;color:#475569;text-transform:uppercase;font-weight:600}
+.info-item span{font-size:13px;color:#e2e8f0}
+.timeline-item{display:flex;gap:12px;margin-bottom:16px}
+.timeline-dot{width:28px;height:28px;border-radius:50%;background:#1e2540;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.timeline-content{flex:1}
+.timeline-content p{font-size:13px;color:#94a3b8;line-height:1.6}
+.timeline-content .time{font-size:11px;color:#475569;margin-top:3px}
+.comment-box{padding:12px 20px;border-top:1px solid #1e2540}
+.comment-input{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:13px;resize:none;font-family:inherit;outline:none;min-height:70px}
+.comment-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.agent-card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:18px;text-align:center}
+.agent-avatar-lg{width:52px;height:52px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#60a5fa;margin:0 auto 10px}
+.agent-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.agent-role{font-size:12px;color:#64748b;margin-bottom:10px}
+.agent-stats{display:flex;justify-content:space-around;padding-top:10px;border-top:1px solid #1e2540}
+.agent-stat-val{font-size:18px;font-weight:700}
+.agent-stat-lbl{font-size:10px;color:#475569}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#34d399;display:inline-block;margin-right:4px}
+.offline-dot{width:8px;height:8px;border-radius:50%;background:#475569;display:inline-block;margin-right:4px}
+.field-hint{font-size:11px;margin-top:5px;min-height:14px;color:#475569}
+.field-hint.found{color:#34d399}
+.field-hint.notfound{color:#fbbf24}
+.view{display:none}
+.view.active{display:block}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e3a5f;border:1px solid #3b82f6;color:#60a5fa;padding:12px 18px;border-radius:10px;font-size:13.5px;display:none;align-items:center;gap:8px;z-index:200}
+.toast.show{display:flex}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-text">⚡ HSH Helpdesk</div>
+    <div class="logo-sub" id="s-portal">IT Support Portal</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section" id="s-overview">Overview</div>
+    <div class="nav-item active" onclick="showView('dashboard',this)">
+      <i class="ti ti-dashboard"></i> <span id="s-dashboard">Dashboard</span>
+    </div>
+    <div class="nav-section" id="s-tickets-nav">Tickets</div>
+    <!-- ข้อ 3: แก้ไขฟังก์ชัน onclick ให้รีเซ็ตตัวกรองเป็น All ทันทีเมื่อกดเมนูนี้ -->
+    <div class="nav-item" onclick="showView('tickets',this);setFilter('All')">
+      <i class="ti ti-ticket"></i> <span id="s-all-tickets">All Tickets</span>
+      <span class="badge" id="all-badge">0</span>
+    </div>
+    <div class="nav-item" onclick="showView('tickets',this);setFilter('Open')">
+      <i class="ti ti-circle-dot"></i> <span id="s-open-nav">Open</span>
+      <span class="badge red" id="open-badge">0</span>
+    </div>
+    <div class="nav-item" onclick="showView('tickets',this);setFilter('Pending')">
+      <i class="ti ti-clock-pause"></i> <span id="s-pending-nav">Pending</span>
+      <span class="badge" id="pending-badge">0</span>
+    </div>
+    <div class="nav-item" onclick="showView('tickets',this);setFilter('Resolved')">
+      <i class="ti ti-circle-check"></i> <span id="s-resolved-nav">Resolved</span>
+    </div>
+    <div class="nav-section" id="s-team-nav">Team</div>
+    <div class="nav-item" onclick="showView('agents',this)">
+      <i class="ti ti-users"></i> <span id="s-agents-nav">Agents</span>
+    </div>
+  </nav>
+  <div class="sidebar-user">
+    <div class="avatar">IT</div>
+    <div>
+      <div style="font-size:12.5px;font-weight:600">IT Admin</div>
+      <div style="font-size:11px;color:#475569" id="s-admin-role">Administrator</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
+    <div class="search-box">
+      <i class="ti ti-search" style="color:#475569;font-size:15px"></i>
+      <input type="text" id="search-input" oninput="filterTickets()">
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-th" onclick="setLang('th')">TH</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="btn btn-ghost" onclick="openExportModal()" style="border-color:#059669;color:#34d399;margin-left:8px">
+      <i class="ti ti-download"></i> <span id="s-export-btn">Export Report</span>
+    </button>
+    <button class="btn btn-primary" onclick="openModal()">
+      <i class="ti ti-plus"></i> <span id="s-create-btn">สร้างทิกเก็ต</span>
+    </button>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label" id="s-total-label">ทิกเก็ตทั้งหมด</div>
+          <div class="stat-value blue" id="d-total">0</div>
+          <div class="stat-trend" id="s-total-sub">วันนี้</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="s-open-label">กำลังดำเนินการ</div>
+          <div class="stat-value yellow" id="d-open">0</div>
+          <div class="stat-trend" id="s-open-sub">รอแก้ไข</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="s-resolved-label">แก้ไขแล้ว</div>
+          <div class="stat-value green" id="d-resolved">0</div>
+          <div class="stat-trend" id="s-resolved-sub">สำเร็จ</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="s-urgent-label">ด่วนมาก</div>
+          <div class="stat-value red" id="d-urgent">0</div>
+          <div class="stat-trend" id="s-urgent-sub">ต้องรีบดำเนินการ</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="s-priority-breakdown">Priority Breakdown</span></div>
+          <div id="priority-bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title" id="s-category-breakdown">Category Breakdown</span></div>
+          <div id="category-bars"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="s-recent-tickets">ทิกเก็ตล่าสุด</span>
+          <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="showView('tickets',null);setFilter('All')" id="s-view-all">ดูทั้งหมด</button>
+        </div>
+        <table class="ticket-table">
+          <thead><tr>
+            <th>ID</th>
+            <th id="th-subject-d">หัวข้อ</th>
+            <th id="th-requester-d">ผู้แจ้ง</th>
+            <th id="th-priority-d">Priority</th>
+            <th id="th-status-d">สถานะ</th>
+            <th id="th-agent-d">Agent</th>
+          </tr></thead>
+          <tbody id="recent-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tickets View -->
+    <div class="view" id="view-tickets">
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" onclick="setFilter('All',this)" id="fb-all">ทั้งหมด</button>
+        <button class="filter-btn" onclick="setFilter('Open',this)" id="fb-open">Open</button>
+        <button class="filter-btn" onclick="setFilter('Pending',this)" id="fb-pending">Pending</button>
+        <button class="filter-btn" onclick="setFilter('Resolved',this)" id="fb-resolved">Resolved</button>
+        <button class="filter-btn" onclick="setFilter('Closed',this)" id="fb-closed">Closed</button>
+        <button class="filter-btn" onclick="setFilter('Urgent',this)" id="fb-urgent" style="margin-left:auto">🔴 Urgent</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="ticket-table" style="width:100%">
+          <thead><tr>
+            <th style="padding-left:16px">ID</th>
+            <th id="th-subject-t">หัวข้อ</th>
+            <th id="th-category-t">หมวดหมู่</th>
+            <th id="th-priority-t">Priority</th>
+            <th id="th-status-t">สถานะ</th>
+            <th id="th-agent-t">Agent</th>
+            <th id="th-date-t">วันที่</th>
+          </tr></thead>
+          <tbody id="tickets-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Agents View -->
+    <div class="view" id="view-agents">
+      <div class="agent-grid" id="agent-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สร้างทิกเก็ต -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-ticket" style="margin-right:8px"></i><span id="s-modal-title">สร้างทิกเก็ตใหม่</span></span>
+      <button class="btn btn-ghost" style="padding:4px 8px" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" id="s-f-title">หัวข้อปัญหา *</label>
+        <input class="form-input" id="f-title">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" id="s-f-phone">เบอร์โทรศัพท์</label>
+          <input class="form-input" id="f-phone" inputmode="tel" oninput="lookupUser()">
+          <div class="field-hint" id="f-phone-hint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="s-f-req">ชื่อผู้แจ้ง *</label>
+          <input class="form-input" id="f-requester">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" id="s-f-dept">แผนก</label>
+          <input class="form-input" id="f-dept">
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="s-f-group">กลุ่ม/บริษัท</label>
+          <select class="form-input form-select" id="f-group"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" id="s-f-cat">หมวดหมู่</label>
+          <select class="form-input form-select" id="f-cat" onchange="onCategoryChange()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="s-f-item">รายการ/อุปกรณ์</label>
+          <select class="form-input form-select" id="f-item"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" id="s-f-case">ลักษณะงาน</label>
+          <select class="form-input form-select" id="f-case"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="s-f-job">ช่องทางการแจ้ง</label>
+          <select class="form-input form-select" id="f-job"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-input form-select" id="f-priority">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="s-f-agent">มอบหมายให้ Agent</label>
+          <select class="form-input form-select" id="f-agent"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="s-f-desc">รายละเอียด</label>
+        <textarea class="form-input" id="f-desc"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()" id="s-cancel-btn">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="createTicket()"><i class="ti ti-send"></i> <span id="s-save-btn">บันทึกทิกเก็ต</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับเลือกช่วงเวลาก่อน Export รายงาน -->
+<div class="modal-overlay" id="export-modal" onclick="if(event.target===this)closeExportModal()">
+  <div class="modal" style="width:380px;">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-download" style="margin-right:8px;color:#34d399"></i><span id="s-export-modal-title">เลือกช่วงเวลาเพื่อ Export รายงาน</span></span>
+      <button class="btn btn-ghost" style="padding:4px 8px" onclick="closeExportModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">จากวันที่ (Start Date)</label>
+        <input type="date" class="form-input" id="ext-start-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ถึงวันที่ (End Date)</label>
+        <input type="date" class="form-input" id="ext-end-date">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeExportModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="processExportCSV()" style="background:#059669"><i class="ti ti-download"></i> ดาวน์โหลดรายงาน</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Panel (เปิดเคส) -->
+<div class="detail-panel" id="detail-panel">
+  <!-- ข้อ 4: ปุ่มกากบาทปิดหน้าจอ (ti-x) กลับมาแสดงผลปกติและชัดเจนขึ้นหลังแก้ CSS -->
+  <div class="detail-header">
+    <div>
+      <div style="font-size:12px;color:#60a5fa;font-weight:600;margin-bottom:4px" id="dp-id"></div>
+      <div style="font-size:15px;font-weight:600" id="dp-title"></div>
+    </div>
+    <button class="btn btn-ghost" style="padding:6px 10px; background:#1e2540; color:#fff;" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px;"></i> ปิดหน้าจอนี้</button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-section">
+      <div class="detail-section-title" id="s-dp-info">ข้อมูลทิกเก็ต</div>
+      <div class="info-grid">
+        <div class="info-item"><label id="s-dp-status-lbl">สถานะ</label><span id="dp-status"></span></div>
+        <div class="info-item"><label>Priority</label><span id="dp-priority"></span></div>
+        <div class="info-item"><label id="s-dp-req-lbl">ผู้แจ้ง</label><span id="dp-req"></span></div>
+        <div class="info-item"><label id="s-dp-phone-lbl">เบอร์โทรศัพท์</label><span id="dp-phone"></span></div>
+        <div class="info-item"><label id="s-dp-dept-lbl">แผนก</label><span id="dp-dept"></span></div>
+        <div class="info-item"><label id="s-dp-group-lbl">กลุ่ม/บริษัท</label><span id="dp-group"></span></div>
+        <div class="info-item"><label id="s-dp-cat-lbl">หมวดหมู่</label><span id="dp-cat"></span></div>
+        <div class="info-item"><label id="s-dp-item-lbl">รายการ/อุปกรณ์</label><span id="dp-item"></span></div>
+        <div class="info-item"><label id="s-dp-case-lbl">ลักษณะงาน</label><span id="dp-case"></span></div>
+        <div class="info-item"><label id="s-dp-job-lbl">ช่องทางการแจ้ง</label><span id="dp-job"></span></div>
+        <div class="info-item"><label id="s-dp-date-lbl">วันที่แจ้ง</label><span id="dp-date"></span></div>
+        <div class="info-item"><label id="s-dp-agent-lbl">Agent รับผิดชอบ</label><span id="dp-agent"></span></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title" id="s-dp-desc-title">รายละเอียดปัญหา</div>
+      <p style="font-size:13.5px;color:#94a3b8;line-height:1.7" id="dp-desc"></p>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title" id="s-dp-action-title">การดำเนินการ (เปลี่ยนสถานะ/ปิดเคส)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Open')">🔵 Open</button>
+        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Pending')">🟡 Pending</button>
+        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Resolved')">🟢 Resolved</button>
+        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Closed')">⚫ Closed</button>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title" id="s-dp-activity">ประวัติการดำเนินการ</div>
+      <div id="dp-timeline"></div>
+    </div>
+  </div>
+  <div class="comment-box">
+    <textarea class="comment-input" id="comment-input"></textarea>
+    <div class="comment-footer">
+      <span style="font-size:11px;color:#475569" id="s-comment-hint">กด Enter เพื่อส่ง</span>
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="addComment()"><i class="ti ti-send"></i> <span id="s-send-btn">ส่ง</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
+
+<script>
+const LANG = {
+  th: {
+    portal:'IT Support Portal', overview:'ภาพรวม', dashboard:'แดชบอร์ด', ticketsNav:'ทิกเก็ต', allTickets:'ทิกเก็ตทั้งหมด', openNav:'กำลังดำเนิน', pendingNav:'รอดำเนินการ', resolvedNav:'แก้ไขแล้ว', teamNav:'ทีมงาน', agentsNav:'เจ้าหน้าที่', adminRole:'ผู้ดูแลระบบ', searchPlaceholder:'ค้นหาทิกเก็ต...', createBtn:'สร้างทิกเก็ต', exportBtn:'Export รายงาน', totalLabel:'ทิกเก็ตทั้งหมด', totalSub:'วันนี้', openLabel:'กำลังดำเนินการ', openSub:'รอแก้ไข', resolvedLabel:'แก้ไขแล้ว', resolvedSub:'สำเร็จ', urgentLabel:'ด่วนมาก', urgentSub:'ต้องรีบดำเนินการ', priorityBreakdown:'สรุปตาม Priority', categoryBreakdown:'สรุปตามหมวดหมู่', recentTickets:'ทิกเก็ตล่าสุด', viewAll:'ดูทั้งหมด', thSubject:'หัวข้อ', thRequester:'ผู้แจ้ง', thPriority:'ระดับ', thStatus:'สถานะ', thAgent:'เจ้าหน้าที่', thCategory:'หมวดหมู่', thDate:'วันที่', fbAll:'ทั้งหมด', modalTitle:'สร้างทิกเก็ตใหม่', fTitle:'หัวข้อปัญหา *', fDesc:'รายละเอียด', fReq:'ชื่อผู้แจ้ง *', fDept:'แผนก', fGroup:'กลุ่ม/บริษัท', fCat:'หมวดหมู่', fItem:'รายการ/อุปกรณ์', fCase:'ลักษณะงาน', fJob:'ช่องทางการแจ้ง', fPhone:'เบอร์โทรศัพท์', fAgent:'มอบหมายให้เจ้าหน้าที่', cancelBtn:'ยกเลิก', saveBtn:'บันทึกทิกเก็ต', dpInfo:'ข้อมูลทิกเก็ต', dpStatusLbl:'สถานะ', dpReqLbl:'ผู้แจ้ง', dpPhoneLbl:'เบอร์โทรศัพท์', dpDeptLbl:'แผนก', dpGroupLbl:'กลุ่ม/บริษัท', dpCatLbl:'หมวดหมู่', dpItemLbl:'รายการ/อุปกรณ์', dpCaseLbl:'ลักษณะงาน', dpJobLbl:'ช่องทางการแจ้ง', dpDateLbl:'วันที่แจ้ง', dpAgentLbl:'เจ้าหน้าที่รับผิดชอบ', dpDescTitle:'รายละเอียดปัญหา', dpActionTitle:'การดำเนินการ', dpActivity:'ประวัติการดำเนินการ', commentHint:'เพิ่มหมายเหตุหรืออัปเดต...', sendBtn:'ส่ง', noUnassigned:'— ยังไม่ได้มอบหมาย —', noGroupSelect:'— เลือกกลุ่ม/บริษัท —', noTickets:'ไม่พบทิกเก็ต', otherOpt:'อื่นๆ', fTitlePH:'เช่น คอมเปิดไม่ติด, ปริ้นเตอร์ใช้ไม่ได้', fDescPH:'อธิบายปัญหาให้ละเอียด...', fReqPH:'ชื่อ-นามสกุล', fDeptPH:'เช่น บัญชี, ขาย, IT', fPhonePH:'เช่น 0812345678', phoneFound:(name)=>`✓ พบข้อมูลผู้ใช้: ${name}`, phoneNotFound:'ไม่พบข้อมูลผู้ใช้ กรุณากรอกชื่อด้วยตนเอง', jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','แจ้งหน้างาน','Sent Email'], toastCreated:(id)=>`สร้างทิกเก็ต ${id} เรียบร้อยแล้ว`, toastStatus:(s)=>`อัปเดตสถานะเป็น ${s}`, toastComment:'เพิ่มหมายเหตุเรียบร้อย', toastValidation:'กรุณากรอกหัวข้อและชื่อผู้แจ้ง', statusChanged:(o,n)=>`เปลี่ยนสถานะจาก ${o} → ${n}`, ticketCreated:'สร้างทิกเก็ตเรียบร้อย', online:'ออนไลน์', offline:'ออฟไลน์', agentTickets:'ทิกเก็ต', agentResolved:'แก้แล้ว', agentPending:'ค้างอยู่', tickets:'ทิกเก็ต', viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'}
+  },
+  en: {
+    portal:'IT Support Portal', overview:'Overview', dashboard:'Dashboard', ticketsNav:'Tickets', allTickets:'All Tickets', openNav:'Open', pendingNav:'Pending', resolvedNav:'Resolved', teamNav:'Team', agentsNav:'Agents', adminRole:'Administrator', searchPlaceholder:'Search tickets...', createBtn:'New Ticket', exportBtn:'Export CSV', totalLabel:'Total Tickets', totalSub:'Today', openLabel:'In Progress', openSub:'Awaiting fix', resolvedLabel:'Resolved', resolvedSub:'Completed', urgentLabel:'Urgent', urgentSub:'Needs immediate action', priorityBreakdown:'Priority Breakdown', categoryBreakdown:'Category Breakdown', recentTickets:'Recent Tickets', viewAll:'View All', thSubject:'Subject', thRequester:'Requester', thPriority:'Priority', thStatus:'Status', thAgent:'Agent', thCategory:'Category', thDate:'Date', fbAll:'All', modalTitle:'Create New Ticket', fTitle:'Subject *', fDesc:'Description', fReq:'Requester Name *', fDept:'Department', fGroup:'Group/Company', fCat:'Category', fItem:'Item / Asset', fCase:'Case Type', fJob:'Reported Via', fPhone:'Phone Number', fAgent:'Assign to Agent', cancelBtn:'Cancel', saveBtn:'Save Ticket', dpInfo:'Ticket Details', dpStatusLbl:'Status', dpReqLbl:'Requester', dpPhoneLbl:'Phone Number', dpDeptLbl:'Department', dpGroupLbl:'Group/Company', dpCatLbl:'Category', dpItemLbl:'Item / Asset', dpCaseLbl:'Case Type', dpJobLbl:'Reported Via', dpDateLbl:'Date Opened', dpAgentLbl:'Assigned Agent', dpDescTitle:'Problem Description', dpActionTitle:'Actions', dpActivity:'Activity Log', commentHint:'Add a note or update...', sendBtn:'Send', noUnassigned:'— Unassigned —', noGroupSelect:'— Select Group/Company —', noTickets:'No tickets found', otherOpt:'Other', fTitlePH:'e.g. PC won\'t start, printer not working', fDescPH:'Describe the issue in detail...', fReqPH:'Full name', fDeptPH:'e.g. Accounting, Sales, IT', fPhonePH:'e.g. 0812345678', phoneFound:(name)=>`✓ User found: ${name}`, phoneNotFound:'User not found, please enter the name manually', jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','On-site Visit','Sent Email'], toastCreated:(id)=>`Ticket ${id} created successfully`, toastStatus:(s)=>`Status updated to ${s}`, toastComment:'Note added successfully', toastValidation:'Please enter a subject and requester name', statusChanged:(o,n)=>`Status changed from ${o} → ${n}`, ticketCreated:'Ticket created successfully', online:'Online', offline:'Offline', agentTickets:'Tickets', agentResolved:'Resolved', agentPending:'Pending', tickets:'tickets', viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'}
+  }
+};
+
+let lang = 'th';
+let L = LANG.th;
+
+function setLang(l){
+  lang = l; L = LANG[l];
+  document.getElementById('btn-th').classList.toggle('active', l==='th');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  applyLang();
+}
+
+function t(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+function ph(id, val){ const el=document.getElementById(id); if(el) el.placeholder=val; }
+
+function applyLang(){
+  t('s-portal', L.portal); t('s-overview', L.overview); t('s-dashboard', L.dashboard); t('s-tickets-nav', L.ticketsNav); t('s-all-tickets', L.allTickets); t('s-open-nav', L.openNav); t('s-pending-nav', L.pendingNav); t('s-resolved-nav', L.resolvedNav); t('s-team-nav', L.teamNav); t('s-agents-nav', L.agentsNav); t('s-admin-role', L.adminRole); ph('search-input', L.searchPlaceholder); t('s-export-btn', L.exportBtn); t('s-create-btn', L.createBtn); t('s-total-label', L.totalLabel); t('s-total-sub', L.totalSub); t('s-open-label', L.openLabel); t('s-open-sub', L.openSub); t('s-resolved-label', L.resolvedLabel); t('s-resolved-sub', L.resolvedSub); t('s-urgent-label', L.urgentLabel); t('s-urgent-sub', L.urgentSub); t('s-priority-breakdown', L.priorityBreakdown); t('s-category-breakdown', L.categoryBreakdown); t('s-recent-tickets', L.recentTickets); t('s-view-all', L.viewAll); t('th-subject-d', L.thSubject); t('th-requester-d', L.thRequester); t('th-priority-d', L.thPriority); t('th-status-d', L.thStatus); t('th-agent-d', L.thAgent); t('th-subject-t', L.thSubject); t('th-category-t', L.thCategory); t('th-priority-t', L.thPriority); t('th-status-t', L.thStatus); t('th-agent-t', L.thAgent); t('th-date-t', L.thDate); t('fb-all', L.fbAll); t('s-modal-title', L.modalTitle); t('s-f-title', L.fTitle); t('s-f-desc', L.fDesc); t('s-f-req', L.fReq); t('s-f-phone', L.fPhone); t('s-f-dept', L.fDept); t('s-f-group', L.fGroup); t('s-f-cat', L.fCat); t('s-f-item', L.fItem); t('s-f-case', L.fCase); t('s-f-job', L.fJob); t('s-f-agent', L.fAgent); t('s-cancel-btn', L.cancelBtn); t('s-save-btn', L.saveBtn); t('s-dp-info', L.dpInfo); t('s-dp-status-lbl', L.dpStatusLbl); t('s-dp-req-lbl', L.dpReqLbl); t('s-dp-phone-lbl', L.dpPhoneLbl); t('s-dp-dept-lbl', L.dpDeptLbl); t('s-dp-group-lbl', L.dpGroupLbl); t('s-dp-cat-lbl', L.dpCatLbl); t('s-dp-item-lbl', L.dpItemLbl); t('s-dp-case-lbl', L.dpCaseLbl); t('s-dp-job-lbl', L.dpJobLbl); t('s-dp-date-lbl', L.dpDateLbl); t('s-dp-agent-lbl', L.dpAgentLbl); t('s-dp-desc-title', L.dpDescTitle); t('s-dp-action-title', L.dpActionTitle); t('s-dp-activity', L.dpActivity); t('s-send-btn', L.sendBtn); ph('comment-input', L.commentHint); ph('f-title', L.fTitlePH); ph('f-desc', L.fDescPH); ph('f-requester', L.fReqPH); ph('f-dept', L.fDeptPH); ph('f-phone', L.fPhonePH); populateGroupSelect(); populateJobSelect(); populateItemSelect(document.getElementById('f-cat').value); renderDashboard(); renderTickets();
+}
+
+const AGENTS = [
+  {id:'A1',name:'สมชาย ใจดี',initials:'สช',role:'IT Support L1',tickets:0,resolved:0,online:true},
+  {id:'A2',name:'วิภา รักงาน',initials:'วภ',role:'IT Support L1',tickets:0,resolved:0,online:true},
+  {id:'A3',name:'ธนพล แก้วใส',initials:'ธน',role:'System Admin',tickets:0,resolved:0,online:false},
+  {id:'A4',name:'พรทิพย์ ฉลาด',initials:'พท',role:'Network Engineer',tickets:0,resolved:0,online:true},
+  {id:'A5',name:'กิตติ ยอดเยี่ยม',initials:'กต',role:'IT Support L2',tickets:0,resolved:0,online:false},
+  {id:'A6',name:'นารี เก่งมาก',initials:'นร',role:'IT Support L1',tickets:0,resolved:0,online:true},
+];
+
+const CATEGORY_LIST = ['Hardware','Software','Application','Authorization','Communication','Network','Security'];
+const CATEGORY_ITEMS = {
+  Hardware: ['Notebook','Mini PC','Tablet','Computer Set','HDD','SSD','CPU','Ram','GPU','FAN CPU','PowerSupply','D-Sub Cable','DVI Cable','HDMI Cable','Displayport Cable','Cable AC Power','Mouse','Keyboard','Monitor','Toner Printer','Printer','Switch','Router','UPS','Desk Phone 3CX','HeadPhone - Callcenter','Led Wall','Card Reader'],
+  Software: ['Windows OS','Mac OS','Browser','MS.365','PDF Reader','Dev.Tools','Driver','JavaScript','RD Prep','Sun System - Infor','KTCheque','Apsen','VLC','Inkscape','Canva','Capcut','OBS Studio','Photoscape'],
+  Application: ['APP. Goldnow','APP. USD Trade','APP. Monitor','APP. HSHRetial','Web Application'],
+  Authorization: ['AD & Domain Account','Shared Folder Permission','VPN & Remote Access','ERP','Email'],
+  Communication: ['Line OA','3CX','Email','Video Conference'],
+  Network: ['Internet','Lan','WIFI','PRTG'],
+  Security: ['Antivirus','Firewall','Access Door','CCTV'],
+};
+const CASE_OPTIONS = ['Error','Change','Add','Reset','Replace','Remove','Unlock'];
+const GROUP_OPTIONS = ['HCOM','HGF','HSH','Bloom','Goodgoldday','Asset'];
+const USERS = [
+  {phone:'0810000001', name:'อนุสรณ์ ยี่สรง', group:'HCOM', dept:''},
+  {phone:'0810000002', name:'ศิวพงศ์ แสงสุรินทร์', group:'HGF', dept:''},
+  {phone:'0810000003', name:'สุรเชษฐ ออเพชร', group:'HSH', dept:''},
+  {phone:'0810000004', name:'ธีรพงศ์ เบญญาพรธนพัฒน์', group:'Bloom', dept:''},
+  {phone:'0810000005', name:'กลวัชร กอบสมบัติ', group:'Goodgoldday', dept:''},
+  {phone:'0810000006', name:'สิริวิชญ์ แสงประสิทธิ์', group:'Asset', dept:''},
+  {phone:'0810000007', name:'อภิชาติ เพชรสงค์', group:'HSH', dept:''},
+];
+
+let tickets = [];
+let ticketCounter = 0;
+let currentTicketId = null;
+let activeFilter = 'All';
+
+const SAMPLE = [
+  {title:'คอมพิวเตอร์เปิดไม่ติด แสดง error ตอน boot',requester:'สมหมาย ดีมาก',phone:'0811112221',dept:'บัญชี',group:'HCOM',cat:'Hardware',item:'Computer Set',case:'Error',job:'Call 3CX',priority:'High',status:'Open',agentId:'A1',desc:'เครื่องแสดง error BSOD ตั้งแต่เช้า ใช้งานไม่ได้เลย'},
+  {title:'ไม่สามารถเข้าระบบ SETTRADE ได้',requester:'รัตนา เก่งงาน',phone:'0822223332',dept:'Broker',group:'HGF',cat:'Authorization',item:'VPN & Remote Access',case:'Error',job:'Chat 3CX',priority:'Urgent',status:'Pending',agentId:'A2',desc:'Login แล้วขึ้น session expired ตลอด'},
+  {title:'ปริ้นเตอร์ชั้น 3 พิมพ์ไม่ออก',requester:'มานะ ขยัน',phone:'0833334443',dept:'ปฏิบัติการ',group:'HSH',cat:'Hardware',item:'Printer',case:'Error',job:'แจ้งหน้างาน',priority:'Medium',status:'Open',agentId:'',desc:'ปริ้นเตอร์ Canon ชั้น 3 offline ทั้งวัน'},
+  {title:'อีเมลส่งไม่ได้ error SMTP',requester:'จุฑาทิพย์ ใจเย็น',phone:'0844445554',dept:'ขาย',group:'Bloom',cat:'Communication',item:'Email',case:'Error',job:'Sent Email',priority:'High',status:'Resolved',agentId:'A3',desc:'ส่ง email ไปลูกค้าภายนอกไม่ได้ ขึ้น relay error'},
+  {title:'Wifi สาขาสุขุมวิทช้ามาก',requester:'ธนวัฒน์ สมาร์ท',phone:'0855556665',dept:'Broker',group:'HGF',cat:'Network',item:'WIFI',case:'Error',job:'Call Line OA',priority:'Medium',status:'Open',agentId:'A4',desc:'ความเร็วเน็ตช้ากว่าปกติมาก ทำงานไม่ได้'},
+  {title:'ลืมรหัสผ่าน Windows',requester:'กนกวรรณ รักษ์',phone:'0866667776',dept:'HR',group:'HCOM',cat:'Authorization',item:'AD & Domain Account',case:'Reset',job:'Chat Line OA',priority:'Low',status:'Resolved',agentId:'A1',desc:'ลืม password login Windows'},
+  {title:'โปรแกรม Gold Trading ค้าง',requester:'ศิริพร ทองดี',phone:'0877778887',dept:'ซื้อขาย',group:'Goodgoldday',cat:'Application',item:'APP. Goldnow',case:'Error',job:'Call 3CX',priority:'Urgent',status:'Open',agentId:'A2',desc:'โปรแกรมหน้าจอซื้อขายทองค้างระหว่างใช้งาน'},
+  {title:'ขอเพิ่ม RAM คอมพิวเตอร์',requester:'บุญมี เจริญ',phone:'0888889998',dept:'IT',group:'Asset',cat:'Hardware',item:'Ram',case:'Add',job:'Sent Email',priority:'Low',status:'Closed',agentId:'A5',desc:'ต้องการ upgrade RAM จาก 8GB เป็น 16GB'},
+];
+
+function initSamples(){
+  SAMPLE.forEach((s, idx)=>{
+    const id=`HSHIT-${++ticketCounter}`;
+    const d=new Date();
+    d.setDate(d.getDate()-Math.floor(Math.random()*7));
+    d.setHours(9 + idx, 15, 0, 0);
+    
+    let closeTimestamp = null;
+    let duration = "";
+    let resolution = "";
+    
+    if(s.status === 'Closed' || s.status === 'Resolved') {
+      const dClose = new Date(d.getTime());
+      dClose.setHours(dClose.getHours() + 1, dClose.getMinutes() + 45);
+      closeTimestamp = dClose.getTime();
+      duration = 105;
+      resolution = "ดำเนินการแก้ไขปัญหาและทดสอบระบบร่วมกับผู้แจ้งเรียบร้อยแล้ว";
+    }
+
+    tickets.push({
+      id,title:s.title,requester:s.requester,phone:s.phone,dept:s.dept,group:s.group,cat:s.cat,item:s.item,case:s.case,job:s.job,
+      priority:s.priority,status:s.status,agentId:s.agentId,desc:s.desc,
+      date:d.toLocaleDateString('th-TH'),
+      openTimestamp: d.getTime(),
+      closeTimestamp: closeTimestamp,
+      duration: duration,
+      resolution: resolution,
+      comments:[{text:'สร้างทิกเก็ตเรียบร้อย / Ticket created',time:d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),author:'System'}]
+    });
+  });
+  updateAgentCounts();
+  updateBadges();
+}
+
+function updateAgentCounts(){
+  AGENTS.forEach(a=>{a.tickets=0;a.resolved=0});
+  tickets.forEach(t=>{
+    const a=AGENTS.find(x=>x.id===t.agentId);
+    if(a){a.tickets++;if(t.status==='Resolved'||t.status==='Closed')a.resolved++;}
+  });
+}
+
+function updateBadges(){
+  document.getElementById('all-badge').textContent=tickets.length;
+  document.getElementById('open-badge').textContent=tickets.filter(t=>t.status==='Open').length;
+  document.getElementById('pending-badge').textContent=tickets.filter(t=>t.status==='Pending').length;
+}
+
+function priorityTag(p){const m={Urgent:'tag-urgent',High:'tag-high',Medium:'tag-medium',Low:'tag-low'};return`<span class="tag ${m[p]||'tag-low'}">${p}</span>`;}
+function statusTag(s){const m={Open:'tag-open',Pending:'tag-pending',Resolved:'tag-resolved',Closed:'tag-closed'};return`<span class="tag ${m[s]||'tag-open'}">${s}</span>`;}
+function agentName(id){const a=AGENTS.find(x=>x.id===id);return a?a.name:'—'}
+function agentInitials(id){const a=AGENTS.find(x=>x.id===id);return a?a.initials:'?'}
+
+function renderDashboard(){
+  const total=tickets.length,open=tickets.filter(t=>t.status==='Open').length;
+  const resolved=tickets.filter(t=>t.status==='Resolved'||t.status==='Closed').length;
+  const urgent=tickets.filter(t=>t.priority==='Urgent').length;
+  document.getElementById('d-total').textContent=total;
+  document.getElementById('d-open').textContent=open;
+  document.getElementById('d-resolved').textContent=resolved;
+  document.getElementById('d-urgent').textContent=urgent;
+
+  const priorities=['Urgent','High','Medium','Low'];
+  const pColors=['#f87171','#fbbf24','#60a5fa','#34d399'];
+  document.getElementById('priority-bars').innerHTML=priorities.map((p,i)=>{
+    const cnt=tickets.filter(t=>t.priority===p).length;
+    const pct=total?Math.round(cnt/total*100):0;
+    return`<div class="priority-item"><div class="priority-label"><span>${p}</span><span>${cnt} ${L.tickets}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pColors[i]}"></div></div></div>`;
+  }).join('');
+
+  const cats=[...new Set(tickets.map(t=>t.cat))];
+  document.getElementById('category-bars').innerHTML=cats.map(c=>{
+    const cnt=tickets.filter(t=>t.cat===c).length;
+    const pct=total?Math.round(cnt/total*100):0;
+    return`<div class="priority-item"><div class="priority-label"><span>${c}</span><span>${cnt}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:#818cf8"></div></div></div>`;
+  }).join('');
+
+  document.getElementById('recent-tbody').innerHTML=tickets.slice().reverse().slice(0,6).map(t=>`
+    <tr class="ticket-row" onclick="openDetail('${t.id}')">
+      <td class="tid">${t.id}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td>
+      <td style="font-size:12px;color:#94a3b8">${t.requester}</td>
+      <td>${priorityTag(t.priority)}</td>
+      <td>${statusTag(t.status)}</td>
+      <td><div class="agent-pill"><div class="agent-dot">${agentInitials(t.agentId)}</div><span>${agentName(t.agentId)}</span></div></td>
+    </tr>`).join('');
+}
+
+function renderTickets(){
+  let list=tickets.slice().reverse();
+  const search=document.getElementById('search-input').value.toLowerCase();
+  if(activeFilter==='Urgent') list=list.filter(t=>t.priority==='Urgent');
+  else if(activeFilter!=='All') list=list.filter(t=>t.status===activeFilter);
+  if(search) list=list.filter(t=>t.title.toLowerCase().includes(search)||t.requester.toLowerCase().includes(search)||t.id.toLowerCase().includes(search));
+  document.getElementById('tickets-tbody').innerHTML=list.length?list.map(t=>`
+    <tr class="ticket-row" onclick="openDetail('${t.id}')">
+      <td class="tid" style="padding-left:16px">${t.id}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td>
+      <td style="font-size:12px;color:#94a3b8">${t.cat}</td>
+      <td>${priorityTag(t.priority)}</td>
+      <td>${statusTag(t.status)}</td>
+      <td><div class="agent-pill"><div class="agent-dot">${agentInitials(t.agentId)}</div><span style="font-size:12px">${agentName(t.agentId)}</span></div></td>
+      <td style="font-size:12px;color:#475569">${t.date}</td>
+    </tr>`).join(''):`<tr><td colspan="7" style="padding:40px;text-align:center;color:#475569">${L.noTickets}</td></tr>`;
+}
+
+function renderAgents(){
+  updateAgentCounts();
+  document.getElementById('agent-grid').innerHTML=AGENTS.map(a=>`
+    <div class="agent-card">
+      <div class="agent-avatar-lg">${a.initials}</div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role}</div>
+      <div style="margin-bottom:10px"><span class="${a.online?'online-dot':'offline-dot'}"></span><span style="font-size:12px;color:#64748b">${a.online?L.online:L.offline}</span></div>
+      <div class="agent-stats">
+        <div><div class="agent-stat-val blue">${a.tickets}</div><div class="agent-stat-lbl">${L.agentTickets}</div></div>
+        <div><div class="agent-stat-val green">${a.resolved}</div><div class="agent-stat-lbl">${L.agentResolved}</div></div>
+        <div><div class="agent-stat-val yellow">${a.tickets-a.resolved}</div><div class="agent-stat-lbl">${L.agentPending}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function populateAgentSelect(){
+  document.getElementById('f-agent').innerHTML=`<option value="">${L.noUnassigned}</option>`+AGENTS.map(a=>`<option value="${a.id}">${a.name} (${a.role})</option>`).join('');
+}
+function populateCategorySelect(){
+  const sel=document.getElementById('f-cat'); const current=sel.value;
+  sel.innerHTML=CATEGORY_LIST.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.value=CATEGORY_LIST.includes(current)?current:CATEGORY_LIST[0];
+}
+function populateItemSelect(cat){
+  const items=CATEGORY_ITEMS[cat]||CATEGORY_ITEMS[CATEGORY_LIST[0]]; const sel=document.getElementById('f-item'); const current=sel.value;
+  sel.innerHTML=items.map(i=>`<option value="${i}">${i}</option>`).join('')+`<option value="${L.otherOpt}">${L.otherOpt}</option>`;
+  if(items.includes(current)||current===L.otherOpt) sel.value=current;
+}
+function onCategoryChange(){ populateItemSelect(document.getElementById('f-cat').value); }
+function populateCaseSelect(){ document.getElementById('f-case').innerHTML=CASE_OPTIONS.map(c=>`<option value="${c}">${c}</option>`).join(''); }
+function populateJobSelect(){
+  const sel=document.getElementById('f-job'); const current=sel.value;
+  sel.innerHTML=L.jobOptions.map(j=>`<option value="${j}">${j}</option>`).join('');
+  if(L.jobOptions.includes(current)) sel.value=current;
+}
+function populateGroupSelect(){
+  const sel=document.getElementById('f-group'); const current=sel.value;
+  sel.innerHTML=`<option value="">${L.noGroupSelect}</option>`+GROUP_OPTIONS.map(g=>`<option value="${g}">${g}</option>`).join('');
+  sel.value=GROUP_OPTIONS.includes(current)?current:'';
+}
+function populateFormSelects(){ populateCategorySelect(); populateItemSelect(document.getElementById('f-cat').value); populateCaseSelect(); populateJobSelect(); populateGroupSelect(); populateAgentSelect(); }
+
+function lookupUser(){
+  const phone=document.getElementById('f-phone').value.trim(); const hint=document.getElementById('f-phone-hint');
+  if(!phone){hint.textContent='';hint.className='field-hint';return;}
+  const u=USERS.find(x=>x.phone===phone);
+  if(u){
+    document.getElementById('f-requester').value=u.name;
+    if(u.group){ const gSel=document.getElementById('f-group'); if(GROUP_OPTIONS.includes(u.group)) gSel.value=u.group; }
+    if(u.dept) document.getElementById('f-dept').value=u.dept;
+    hint.textContent=L.phoneFound(u.name); hint.className='field-hint found';
+  }else{ hint.textContent=L.phoneNotFound; hint.className='field-hint notfound'; }
+}
+
+function showView(name,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent=L.viewTitles[name]||name;
+  closeDetail();
+  if(name==='dashboard') renderDashboard();
+  if(name==='tickets') renderTickets();
+  if(name==='agents') renderAgents();
+}
+
+// ข้อ 3: ปรับแต่งให้ตัวกรองผูกสัมพันธ์กับปุ่มของแถบเมนูด้านบนอัตโนมัติแม้จะเรียกจากปุ่มภายนอก
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('#filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  const btn = el || document.getElementById('fb-' + f.toLowerCase());
+  if(btn) btn.classList.add('active');
+  renderTickets();
+}
+
+function filterTickets(){renderTickets();}
+function openModal(){populateFormSelects();document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function openExportModal(){ const today = new Date().toISOString().split('T')[0]; document.getElementById('ext-start-date').value = ''; document.getElementById('ext-end-date').value = today; document.getElementById('export-modal').classList.add('open'); }
+function closeExportModal(){ document.getElementById('export-modal').classList.remove('open'); }
+
+function createTicket(){
+  const title=document.getElementById('f-title').value.trim(); const req=document.getElementById('f-requester').value.trim();
+  if(!title||!req){showToast(L.toastValidation);return;}
+  const id=`HSHIT-${++ticketCounter}`; const now=new Date();
+  tickets.push({
+    id,title,requester:req, phone:document.getElementById('f-phone').value.trim(), dept:document.getElementById('f-dept').value||'—', group:document.getElementById('f-group').value||'—', cat:document.getElementById('f-cat').value, item:document.getElementById('f-item').value, case:document.getElementById('f-case').value, job:document.getElementById('f-job').value, priority:document.getElementById('f-priority').value, status:'Open', agentId:document.getElementById('f-agent').value, desc:document.getElementById('f-desc').value||(lang==='th'?'ไม่มีรายละเอียดเพิ่มเติม':'No additional details'), date:now.toLocaleDateString('th-TH'), openTimestamp: now.getTime(), closeTimestamp: null, duration: "", resolution: "", comments:[{text:L.ticketCreated,time:now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),author:'System'}]
+  });
+  closeModal();
+  ['f-title','f-requester','f-dept','f-desc','f-phone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-phone-hint').textContent=''; document.getElementById('f-phone-hint').className='field-hint'; document.getElementById('f-group').value='';
+  populateFormSelects(); updateAgentCounts(); updateBadges(); showToast(L.toastCreated(id)); showView('tickets',null); setFilter('All');
+}
+
+function openDetail(id){
+  const t=tickets.find(x=>x.id===id); if(!t) return; currentTicketId=id;
+  document.getElementById('dp-id').textContent=t.id;
+  document.getElementById('dp-title').textContent=t.title;
+  document.getElementById('dp-status').innerHTML=statusTag(t.status);
+  document.getElementById('dp-priority').innerHTML=priorityTag(t.priority);
+  document.getElementById('dp-req').textContent=t.requester;
+  document.getElementById('dp-phone').textContent=t.phone||'—';
+  document.getElementById('dp-dept').textContent=t.dept;
+  document.getElementById('dp-group').textContent=t.group||'—';
+  document.getElementById('dp-cat').textContent=t.cat;
+  document.getElementById('dp-item').textContent=t.item||'—';
+  document.getElementById('dp-case').textContent=t.case||'—';
+  document.getElementById('dp-job').textContent=t.job||'—';
+  document.getElementById('dp-date').textContent=t.date;
+  document.getElementById('dp-agent').textContent=agentName(t.agentId);
+  document.getElementById('dp-desc').textContent=t.desc;
+  document.getElementById('dp-timeline').innerHTML=t.comments.slice().reverse().map(c=>`
+    <div class="timeline-item">
+      <div class="timeline-dot"><i class="ti ti-message" style="font-size:13px;color:#60a5fa"></i></div>
+      <div class="timeline-content">
+        <p>${c.text}</p>
+        <div class="time">${c.author} · ${c.time}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail(){document.getElementById('detail-panel').classList.remove('open');currentTicketId=null;}
+
+function changeStatus(s){
+  if(!currentTicketId) return; const t=tickets.find(x=>x.id===currentTicketId); if(!t) return;
+  if(s === 'Closed') {
+    if(t.status === 'Closed') { alert(lang === 'th' ? "เคสนี้ปิดไปแล้วครับ" : "This ticket is already closed."); return; }
+    const reason = prompt(lang === 'th' ? `กรุณาระบุวิธีการแก้ไข/เหตุผลก่อนปิดเคส (${t.id}):` : `Please enter the resolution/reason before closing (${t.id}):`);
+    if (reason === null || reason.trim() === "") { alert(lang === 'th' ? "ต้องระบุข้อมูลการแก้ไขก่อนปิดงานครับ!" : "Resolution reason is required to close the ticket!"); return; }
+    const now=new Date(); t.closeTimestamp = now.getTime(); t.duration = Math.round((t.closeTimestamp - t.openTimestamp) / 60000); t.resolution = reason;
+    t.comments.push({text: (lang === 'th' ? "วิธีการดำเนินการ: " : "Resolution Action: ") + reason, time:now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}), author:'IT Admin'});
+  }
+  if(s === 'Resolved' && !t.closeTimestamp) { const now=new Date(); t.closeTimestamp = now.getTime(); t.duration = Math.round((t.closeTimestamp - t.openTimestamp) / 60000); t.resolution = "แก้ไขปัญหาเรียบร้อยเเล้ว"; }
+  const old=t.status; t.status=s; const now=new Date(); t.comments.push({text:L.statusChanged(old,s),time:now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),author:'IT Admin'});
+  openDetail(currentTicketId); updateBadges(); renderDashboard(); renderTickets(); showToast(L.toastStatus(s));
+}
+
+function addComment(){
+  const txt=document.getElementById('comment-input').value.trim(); if(!txt||!currentTicketId) return; const t=tickets.find(x=>x.id===currentTicketId); const now=new Date();
+  t.comments.push({text:txt,time:now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}),author:'IT Admin'});
+  document.getElementById('comment-input').value=''; openDetail(currentTicketId); showToast(L.toastComment);
+}
+
+function showToast(msg){ const el=document.getElementById('toast'); document.getElementById('toast-msg').textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
+
+// ข้อ 1 & 2: แยกวันที่/เวลา ออกจากกัน และเปลี่ยนลำดับคอลัมน์ในไฟล์รีพอต CSV ใหม่ตามหัวข้อที่ระบุ
+function processExportCSV() {
+  const startInput = document.getElementById('ext-start-date').value;
+  const endInput = document.getElementById('ext-end-date').value;
+  let startDate = startInput ? new Date(startInput + 'T00:00:00') : null;
+  let endDate = endInput ? new Date(endInput + 'T23:59:59') : null;
+  let list = tickets;
+  
+  if(startDate) { list = list.filter(t => t.openTimestamp >= startDate.getTime()); }
+  if(endDate) { list = list.filter(t => t.openTimestamp <= endDate.getTime()); }
+  if(list.length === 0) { alert(lang === 'th' ? "ไม่พบข้อมูลทิกเก็ตในช่วงวันที่เลือก" : "No tickets found in the selected date range."); return; }
+
+  let csvContent = "\uFEFF"; // ป้องกันปัญหาภาษาไทยแสดงผลเพี้ยนใน Excel
+  
+  // หัวข้อเรียงใหม่ตามข้อ 2 และแยก วันที่/เวลา ออกตามข้อ 1
+  csvContent += "ID,วันที่,เวลาเปิดเคส,หัวข้อ (Subject),หมวดหมู่ (Category),อุปกรณ์ (Item),ลักษณะงาน (Case),รายละเอียดทิกเก็ต (Description),ผู้แจ้ง (Requester),ช่องทาง (Via),เบอร์โทร (Phone),แผนก (Dept),กลุ่ม (Group),ระดับ (Priority),สถานะ (Status),วันที่ปิดเคส,เวลาปิดเคส (Close Time),ระยะเวลาดำเนินการ (นาที),วิธีการดำเนินการ (Resolution Action)\n";
+  
+  list.forEach(t => {
+    const title = t.title.replace(/"/g, '""');
+    const req = t.requester.replace(/"/g, '""');
+    const desc = t.desc.replace(/"/g, '""').replace(/\n/g, ' ');
+    const resText = t.resolution ? t.resolution.replace(/"/g, '""').replace(/\n/g, ' ') : '—';
+    
+    // ข้อ 1: แยกฟอร์แมตวันที่ และเวลา ออกจากกันโดยเด็ดขาด
+    const openDateObj = new Date(t.openTimestamp);
+    const openDateStr = openDateObj.toLocaleDateString('th-TH');
+    const openTimeStr = openDateObj.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    let closeDateStr = '—';
+    let closeTimeStr = '—';
+    if(t.closeTimestamp) {
+      const closeDateObj = new Date(t.closeTimestamp);
+      closeDateStr = closeDateObj.toLocaleDateString('th-TH');
+      closeTimeStr = closeDateObj.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    const durationStr = t.duration !== "" ? t.duration : '—';
+
+    // บันทึกข้อมูลแบบเรียงลำดับใหม่ตามข้อ 2
+    csvContent += `"${t.id}","${openDateStr}","${openTimeStr}","${title}","${t.cat}","${t.item}","${t.case}","${desc}","${req}","${t.job}","${t.phone||''}","${t.dept}","${t.group}","${t.priority}","${t.status}","${closeDateStr}","${closeTimeStr}","${durationStr}","${resText}"\n`;
+  });
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `HSH_Helpdesk_Report_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  closeExportModal();
+}
+
+populateFormSelects();
+initSamples();
+applyLang();
+renderDashboard();
+renderTickets();
+</script>
+</body>
+</html>
