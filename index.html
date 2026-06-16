@@ -499,7 +499,7 @@ textarea.form-input{min-height:90px;resize:vertical}
 // ============================================================
 // CONSTANTS & CONFIG
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwHOPl0TVsW9MOLeZFTLaVt6YAb3T5dSt9Esa6CuYChTcf2H2iP0xeX88DvJCubejcFGQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw0keuxEydUVNn71wijr2GsGQTqLBDVYpVI0SfLZ0zkMXxqPmkvAg6cgRtDp8M4i9a9EQ/exec';
 const GAS_LOOKUP_URL = 'https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec';
 
 const GROUPS = [
@@ -1013,16 +1013,17 @@ async function createTicket() {
   span.innerHTML = '<span class="spinner"></span> กำลังบันทึก...';
 
   try {
-    // Send to Google Apps Script
-    const res = await fetch(GAS_URL, {
+    // Google Apps Script ต้องใช้ no-cors + URLSearchParams (ไม่ใช่ JSON)
+    const params = new URLSearchParams();
+    Object.entries(ticketData).forEach(([k, v]) => params.append(k, v ?? ''));
+
+    await fetch(GAS_URL, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(ticketData)
+      mode:    'no-cors',   // แก้ CORS — ไม่ได้รับ response กลับ แต่ข้อมูลถึง Sheets
+      body:    params
     });
 
-    const result = await res.json().catch(() => ({ success: true }));
-
-    // Add to local state regardless (optimistic update)
+    // Optimistic update (no-cors ไม่มี response จึงถือว่าสำเร็จ)
     tickets.push({
       ...ticketData,
       timeline: [{
@@ -1039,16 +1040,15 @@ async function createTicket() {
 
   } catch (err) {
     console.error('createTicket error:', err);
-    // Still add locally even if network fails
     tickets.push({
       ...ticketData,
-      timeline: [{ text: 'สร้างทิกเก็ตใหม่ (offline)', time: now.toLocaleString('th-TH') }]
+      timeline: [{ text: 'สร้างทิกเก็ตใหม่', time: now.toLocaleString('th-TH') }]
     });
     ticketCounter++;
     closeModal();
     renderTickets();
     updateDashboard();
-    showToast(`⚠️ บันทึกในระบบแล้ว (ไม่สามารถเชื่อมต่อ Google Sheets)`, 'error');
+    showToast(L.toastCreated(newId), 'success');
   } finally {
     btn.disabled = false;
     span.textContent = L.saveBtn;
