@@ -267,6 +267,17 @@ textarea.form-input{min-height:90px;resize:vertical}
     </div>
 
     <div class="view" id="view-agents">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 16px; color: #e2e8f0; font-weight: 600;">รายชื่อเจ้าหน้าที่ (Agents)</h2>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-ghost" style="border-color:#f87171; color:#f87171;" onclick="removeAgent()">
+            <i class="ti ti-trash"></i> ลบเจ้าหน้าที่
+          </button>
+          <button class="btn btn-primary" onclick="addAgent()">
+            <i class="ti ti-user-plus"></i> เพิ่มเจ้าหน้าที่
+          </button>
+        </div>
+      </div>
       <div class="agent-grid" id="agent-grid"></div>
     </div>
   </div>
@@ -442,7 +453,6 @@ const LANG = {
 let lang = 'th';
 let L = LANG.th;
 
-// ตัวเลือกข้อมูลเริ่มต้นของระบบ (Mock Data)
 const GROUPS = ["บริษัท ฮั่วเซ่งเฮง โกลด์ ฟิวเจอร์ส จำกัด", "บริษัท ฮั่วเซ่งเฮง คอมโมดิทิส จำกัด", "บริษัท ฮั่วเซ่งเฮง สิงคโปร์", "อื่นๆ"];
 const CATEGORIES = {
   "Hardware": ["Computer/PC", "Laptop", "Printer", "Monitor", "Network/Router"],
@@ -452,7 +462,6 @@ const CATEGORIES = {
 };
 const CASES = ["ติดตั้งใหม่", "แจ้งซ่อม/มีปัญหา", "ขอเพิ่มสิทธิ์", "บำรุงรักษา"];
 
-// ฟังก์ชันสลับภาษา
 function setLang(l){
   lang = l; L = LANG[l];
   document.getElementById('btn-th').classList.toggle('active', l==='th');
@@ -468,57 +477,6 @@ function applyLang(){
   initDropdowns();
 }
 
-// -----------------------------------------------------------------------------------
-// 🔥 คีย์เวิร์ดสำคัญ: ดึงข้อมูลจาก GOOGLE SHEETS API แบบ AUTO-FILL ผ่านเบอร์โทรศัพท์
-// -----------------------------------------------------------------------------------
-async function lookupUser() {
-  const phoneInput = document.getElementById('f-phone');
-  const hintEl = document.getElementById('f-phone-hint');
-  const phone = phoneInput.value.trim();
-
-  if (!phone) {
-    hintEl.textContent = '';
-    hintEl.className = 'field-hint';
-    return;
-  }
-
-  hintEl.textContent = '⏳ กำลังค้นหาข้อมูล...';
-  hintEl.className = 'field-hint';
-
-  // 🔴 นำ URL ของคุณมาวางเชื่อมตรงนี้เรียบร้อยแล้ว
-  const webAppUrl = `https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec`;
-
-  try {
-    const response = await fetch(webAppUrl);
-    const data = await response.json();
-
-    if (data.success && data.user) {
-      // กรอกข้อมูลลงฟอร์มอัตโนมัติเมื่อเจอเบอร์โทร
-      document.getElementById('f-requester').value = data.user.reporter_name || '';
-      document.getElementById('f-dept').value = data.user.department || '';
-      
-      // เลือกกลุ่ม/บริษัทใน Dropdown อัตโนมัติ (ถ้าหากข้อมูลในชีตสะกดตรงกัน)
-      const groupSelect = document.getElementById('f-group');
-      if ([...groupSelect.options].some(opt => opt.value === data.user.company_group)) {
-        groupSelect.value = data.user.company_group;
-      } else {
-        groupSelect.value = "อื่นๆ";
-      }
-
-      hintEl.textContent = L.phoneFound(data.user.reporter_name);
-      hintEl.className = 'field-hint found';
-    } else {
-      hintEl.textContent = L.phoneNotFound;
-      hintEl.className = 'field-hint notfound';
-    }
-  } catch (error) {
-    console.error("Error looking up user:", error);
-    hintEl.textContent = '❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้';
-    hintEl.className = 'field-hint notfound';
-  }
-}
-
-// ฟังก์ชันอื่นๆ สำหรับจัดการ UI คอนโทรลหน้าเว็บ
 function initDropdowns(){
   const gSel = document.getElementById('f-group'); gSel.innerHTML = `<option value="">${L.noGroupSelect}</option>`;
   GROUPS.forEach(g => gSel.innerHTML += `<option value="${g}">${g}</option>`);
@@ -554,7 +512,6 @@ function showView(viewId, element){
 function openModal(){ document.getElementById('modal').classList.add('open'); }
 function closeModal(){ 
   document.getElementById('modal').classList.remove('open');
-  // ล้างค่าข้อมูลในฟอร์มเมื่อปิด
   document.getElementById('f-title').value = '';
   document.getElementById('f-phone').value = '';
   document.getElementById('f-requester').value = '';
@@ -576,14 +533,15 @@ function setFilter(status, btn){
 }
 
 function filterTickets(){ console.log("Searching..."); }
-function createTicket(){ 
-  alert(L.ticketCreated); 
-  closeModal(); 
-}
+
 function processExportCSV(){ 
   alert("Downloading CSV..."); 
   closeExportModal(); 
 }
+
+// ------------------------------------------------------------------
+// ฟังก์ชันค้นหาผู้ใช้งานจากเบอร์โทรศัพท์ (Google Apps Script)
+// ------------------------------------------------------------------
 async function lookupUser() {
   const phoneInput = document.getElementById('f-phone');
   const hintEl = document.getElementById('f-phone-hint');
@@ -598,7 +556,6 @@ async function lookupUser() {
   hintEl.textContent = '⏳ กำลังค้นหาข้อมูล...';
   hintEl.className = 'field-hint';
 
-  // ปรับปรุง: เพิ่ม ?phone= ต่อท้ายเพื่อให้ระบบ Google Sheets สามารถรับค่าไปค้นหาได้จริง
   const webAppUrl = `https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec?phone=${encodeURIComponent(phone)}`;
 
   try {
@@ -629,7 +586,78 @@ async function lookupUser() {
   }
 }
 
-// เริ่มระบบก้าวแรกด้วยภาษาไทย
+// ------------------------------------------------------------------
+// ฟังก์ชันสร้างทิกเก็ต (เตรียมส่งข้อมูลไป Google Apps Script)
+// ------------------------------------------------------------------
+async function createTicket() {
+  const ticketData = {
+    title: document.getElementById('f-title').value,
+    phone: document.getElementById('f-phone').value,
+    requester: document.getElementById('f-requester').value,
+    dept: document.getElementById('f-dept').value,
+    group: document.getElementById('f-group').value,
+    category: document.getElementById('f-cat').value,
+    item: document.getElementById('f-item').value,
+    caseType: document.getElementById('f-case').value,
+    job: document.getElementById('f-job').value,
+    priority: document.getElementById('f-priority').value,
+    agent: document.getElementById('f-agent').value,
+    desc: document.getElementById('f-desc').value
+  };
+
+  if(!ticketData.title || !ticketData.requester) {
+    alert(L.toastValidation);
+    return;
+  }
+
+  const saveBtn = document.getElementById('s-save-btn');
+  const originalText = saveBtn.innerText;
+  saveBtn.innerText = "กำลังบันทึก...";
+
+  try {
+    // 🔴 URL นี้ใช้ส่งข้อมูลกลับไปบันทึก (คุณต้องอัปเดตโค้ด Apps Script ฝั่ง Server ก่อนเพื่อรับ POST)
+    const webAppUrl = `https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec`;
+
+    // ** ถอดคอมเมนต์ส่วนนี้เมื่อฝั่ง Google Sheets เปิดรับฟังก์ชัน doPost แล้ว **
+    /*
+    const response = await fetch(webAppUrl, {
+      method: 'POST',
+      body: JSON.stringify(ticketData)
+    });
+    const result = await response.json();
+    */
+
+    console.log("จำลองส่งข้อมูลสำเร็จ:", ticketData);
+    alert(L.ticketCreated); 
+    closeModal(); 
+    
+  } catch (error) {
+    console.error("Error saving ticket:", error);
+    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+  } finally {
+    saveBtn.innerText = originalText;
+  }
+}
+
+// ------------------------------------------------------------------
+// ฟังก์ชันจัดการเจ้าหน้าที่ (Add / Remove)
+// ------------------------------------------------------------------
+function addAgent() {
+  const name = prompt("กรุณาระบุชื่อเจ้าหน้าที่ใหม่:");
+  if(name) {
+    alert(`เพิ่มเจ้าหน้าที่ ${name} สำเร็จ!`);
+    // อนาคตสามารถเขียนโค้ดเพื่อรีโหลด หรือเพิ่ม Card ของเจ้าหน้าที่ลงในหน้า UI ตรงนี้
+  }
+}
+
+function removeAgent() {
+  const name = prompt("กรุณาระบุชื่อเจ้าหน้าที่ที่ต้องการลบออก:");
+  if(name) {
+    alert(`ลบข้อมูลเจ้าหน้าที่ ${name} ออกจากระบบ!`);
+    // อนาคตสามารถเขียนโค้ดลบ Card ออกจากหน้า UI ตรงนี้
+  }
+}
+
 applyLang();
 </script>
 </body>
