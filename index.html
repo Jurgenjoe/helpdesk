@@ -499,7 +499,7 @@ textarea.form-input{min-height:90px;resize:vertical}
 // ============================================================
 // CONSTANTS & CONFIG
 // ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxR4FoUzyh6BFIc8_cOncVtZlh3sx_DH161oPYM6UrsyLSsf28COc8OAAEB1TqVmcTrFg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzzHWuSgdqM2nA3R0ogXvvsTNAFunLIswJJFc30bpChk5UcAb6o16iWSOhMGk9mBROGmQ/exec';
 const GAS_LOOKUP_URL = 'https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec';
 
 const GROUPS = [
@@ -1170,7 +1170,49 @@ function removeAgent(agentId) {
 // ============================================================
 // INIT
 // ============================================================
+// ============================================================
+// LOAD TICKETS FROM GOOGLE SHEETS ON STARTUP
+// ============================================================
+async function loadTicketsFromSheets() {
+  try {
+    const res = await fetch(GAS_URL + '?action=getTickets');
+    const data = await res.json();
+    if (data.success && data.tickets && data.tickets.length > 0) {
+      tickets = data.tickets.map((r, i) => ({
+        id:        r['ID']         || ('TK-' + String(i+1).padStart(4,'0')),
+        title:     r['หัวข้อ']     || '',
+        requester: r['ผู้แจ้ง']    || '',
+        phone:     r['เบอร์โทร']   || '',
+        dept:      r['แผนก']       || '',
+        group:     r['กลุ่ม/บริษัท'] || '',
+        category:  r['หมวดหมู่']   || '',
+        item:      r['รายการ']     || '',
+        caseType:  r['ลักษณะงาน'] || '',
+        job:       r['ช่องทาง']    || '',
+        priority:  r['Priority']   || 'Medium',
+        status:    r['สถานะ']      || 'Open',
+        agent:     r['Agent']      || '',
+        desc:      r['รายละเอียด'] || '',
+        date:      r['วันที่']     || '',
+        timestamp: r['Timestamp']  || '',
+        timeline:  []
+      }));
+      // set counter ต่อจาก ticket ล่าสุด
+      const maxNum = tickets.reduce((max, t) => {
+        const n = parseInt((t.id || '').replace('TK-','')) || 0;
+        return Math.max(max, n);
+      }, 0);
+      ticketCounter = maxNum + 1;
+      renderTickets();
+      updateDashboard();
+    }
+  } catch(err) {
+    console.warn('ไม่สามารถโหลดข้อมูลจาก Sheets:', err);
+  }
+}
+
 applyLang();
+loadTicketsFromSheets();
 </script>
 </body>
 </html>
