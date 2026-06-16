@@ -1013,26 +1013,19 @@ async function createTicket() {
   span.innerHTML = '<span class="spinner"></span> กำลังบันทึก...';
 
   try {
-    // Google Apps Script ต้องใช้ no-cors + URLSearchParams (ไม่ใช่ JSON)
+    // ใช้ GET + query string — รองรับ CORS 100%
     const params = new URLSearchParams();
     Object.entries(ticketData).forEach(([k, v]) => params.append(k, v ?? ''));
+    const url = GAS_URL + '?' + params.toString();
 
-    await fetch(GAS_URL, {
-      method:  'POST',
-      mode:    'no-cors',   // แก้ CORS — ไม่ได้รับ response กลับ แต่ข้อมูลถึง Sheets
-      body:    params
-    });
+    const res = await fetch(url);
+    const result = await res.json();
 
-    // Optimistic update (no-cors ไม่มี response จึงถือว่าสำเร็จ)
     tickets.push({
       ...ticketData,
-      timeline: [{
-        text: `สร้างทิกเก็ตใหม่ โดย IT Admin`,
-        time: now.toLocaleString('th-TH')
-      }]
+      timeline: [{ text: 'สร้างทิกเก็ตใหม่ โดย IT Admin', time: now.toLocaleString('th-TH') }]
     });
     ticketCounter++;
-
     closeModal();
     renderTickets();
     updateDashboard();
@@ -1042,13 +1035,13 @@ async function createTicket() {
     console.error('createTicket error:', err);
     tickets.push({
       ...ticketData,
-      timeline: [{ text: 'สร้างทิกเก็ตใหม่', time: now.toLocaleString('th-TH') }]
+      timeline: [{ text: 'สร้างทิกเก็ตใหม่ (offline)', time: now.toLocaleString('th-TH') }]
     });
     ticketCounter++;
     closeModal();
     renderTickets();
     updateDashboard();
-    showToast(L.toastCreated(newId), 'success');
+    showToast('บันทึกในเครื่องแล้ว (ไม่สามารถเชื่อมต่อ Sheets)', 'error');
   } finally {
     btn.disabled = false;
     span.textContent = L.saveBtn;
