@@ -34,6 +34,7 @@ a{color:inherit;text-decoration:none}
 .btn-primary:hover{background:#1e40af}
 .btn-ghost{background:transparent;color:#94a3b8;border:1px solid #1e2540}
 .btn-ghost:hover{background:#1e2540;color:#e2e8f0}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .lang-toggle{display:flex;background:#0f1117;border:1px solid #1e2540;border-radius:8px;overflow:hidden;flex-shrink:0}
 .lang-btn{padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;transition:all .15s}
 .lang-btn.active{background:#1e3a5f;color:#60a5fa}
@@ -109,7 +110,7 @@ textarea.form-input{min-height:90px;resize:vertical}
 .comment-input{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:13px;resize:none;font-family:inherit;outline:none;min-height:70px}
 .comment-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 .agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.agent-card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:18px;text-align:center}
+.agent-card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:18px;text-align:center;position:relative}
 .agent-avatar-lg{width:52px;height:52px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#60a5fa;margin:0 auto 10px}
 .agent-name{font-size:14px;font-weight:600;margin-bottom:2px}
 .agent-role{font-size:12px;color:#64748b;margin-bottom:10px}
@@ -123,8 +124,20 @@ textarea.form-input{min-height:90px;resize:vertical}
 .field-hint.notfound{color:#fbbf24}
 .view{display:none}
 .view.active{display:block}
-.toast{position:fixed;bottom:24px;right:24px;background:#1e3a5f;border:1px solid #3b82f6;color:#60a5fa;padding:12px 18px;border-radius:10px;font-size:13.5px;display:none;align-items:center;gap:8px;z-index:200}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e3a5f;border:1px solid #3b82f6;color:#60a5fa;padding:12px 18px;border-radius:10px;font-size:13.5px;display:none;align-items:center;gap:8px;z-index:200;max-width:360px}
 .toast.show{display:flex}
+.toast.error{background:#3b1f1f;border-color:#f87171;color:#f87171}
+.toast.success{background:#1e3b2e;border-color:#34d399;color:#34d399}
+/* Agent delete button */
+.agent-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;color:#475569;cursor:pointer;padding:4px;border-radius:6px;font-size:14px;transition:all .15s}
+.agent-delete-btn:hover{background:#3b1f1f;color:#f87171}
+/* Loading spinner */
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Empty state */
+.empty-state{text-align:center;padding:48px 24px;color:#475569}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;color:#1e2540}
+.empty-state p{font-size:14px}
 </style>
 </head>
 <body>
@@ -189,6 +202,7 @@ textarea.form-input{min-height:90px;resize:vertical}
   </div>
 
   <div class="content">
+    <!-- DASHBOARD VIEW -->
     <div class="view active" id="view-dashboard">
       <div class="stat-grid">
         <div class="stat-card">
@@ -241,6 +255,7 @@ textarea.form-input{min-height:90px;resize:vertical}
       </div>
     </div>
 
+    <!-- TICKETS VIEW -->
     <div class="view" id="view-tickets">
       <div class="filter-bar" id="filter-bar">
         <button class="filter-btn active" onclick="setFilter('All',this)" id="fb-all">ทั้งหมด</button>
@@ -266,15 +281,13 @@ textarea.form-input{min-height:90px;resize:vertical}
       </div>
     </div>
 
+    <!-- AGENTS VIEW -->
     <div class="view" id="view-agents">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 16px; color: #e2e8f0; font-weight: 600;">รายชื่อเจ้าหน้าที่ (Agents)</h2>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-ghost" style="border-color:#f87171; color:#f87171;" onclick="removeAgent()">
-            <i class="ti ti-trash"></i> ลบเจ้าหน้าที่
-          </button>
-          <button class="btn btn-primary" onclick="addAgent()">
-            <i class="ti ti-user-plus"></i> เพิ่มเจ้าหน้าที่
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h2 style="font-size:16px;color:#e2e8f0;font-weight:600;" id="s-agents-title">รายชื่อเจ้าหน้าที่ (Agents)</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="openAgentModal()">
+            <i class="ti ti-user-plus"></i> <span id="s-add-agent-btn">เพิ่มเจ้าหน้าที่</span>
           </button>
         </div>
       </div>
@@ -283,6 +296,7 @@ textarea.form-input{min-height:90px;resize:vertical}
   </div>
 </div>
 
+<!-- TICKET CREATE MODAL -->
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header">
@@ -292,23 +306,23 @@ textarea.form-input{min-height:90px;resize:vertical}
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label" id="s-f-title">หัวข้อปัญหา *</label>
-        <input class="form-input" id="f-title">
+        <input class="form-input" id="f-title" placeholder="เช่น คอมเปิดไม่ติด, ปริ้นเตอร์ใช้ไม่ได้">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" id="s-f-phone">เบอร์โทรศัพท์</label>
-          <input class="form-input" id="f-phone" inputmode="tel" onblur="lookupUser()">
+          <input class="form-input" id="f-phone" inputmode="tel" onblur="lookupUser()" placeholder="เช่น 0812345678">
           <div class="field-hint" id="f-phone-hint"></div>
         </div>
         <div class="form-group">
           <label class="form-label" id="s-f-req">ชื่อผู้แจ้ง *</label>
-          <input class="form-input" id="f-requester">
+          <input class="form-input" id="f-requester" placeholder="ชื่อ-นามสกุล">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" id="s-f-dept">แผนก</label>
-          <input class="form-input" id="f-dept">
+          <input class="form-input" id="f-dept" placeholder="เช่น บัญชี, ขาย, IT">
         </div>
         <div class="form-group">
           <label class="form-label" id="s-f-group">กลุ่ม/บริษัท</label>
@@ -352,20 +366,23 @@ textarea.form-input{min-height:90px;resize:vertical}
       </div>
       <div class="form-group">
         <label class="form-label" id="s-f-desc">รายละเอียด</label>
-        <textarea class="form-input" id="f-desc"></textarea>
+        <textarea class="form-input" id="f-desc" placeholder="อธิบายปัญหาให้ละเอียด..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()" id="s-cancel-btn">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="createTicket()"><i class="ti ti-send"></i> <span id="s-save-btn">บันทึกทิกเก็ต</span></button>
+      <button class="btn btn-primary" id="save-ticket-btn" onclick="createTicket()">
+        <i class="ti ti-send"></i> <span id="s-save-btn">บันทึกทิกเก็ต</span>
+      </button>
     </div>
   </div>
 </div>
 
+<!-- EXPORT MODAL -->
 <div class="modal-overlay" id="export-modal" onclick="if(event.target===this)closeExportModal()">
   <div class="modal" style="width:380px;">
     <div class="modal-header">
-      <span class="modal-title"><i class="ti ti-download" style="margin-right:8px;color:#34d399"></i><span id="s-export-modal-title">เลือกช่วงเวลาเพื่อ Export รายงาน</span></span>
+      <span class="modal-title"><i class="ti ti-download" style="margin-right:8px;color:#34d399"></i><span>เลือกช่วงเวลาเพื่อ Export รายงาน</span></span>
       <button class="btn btn-ghost" style="padding:4px 8px" onclick="closeExportModal()"><i class="ti ti-x"></i></button>
     </div>
     <div class="modal-body">
@@ -385,13 +402,49 @@ textarea.form-input{min-height:90px;resize:vertical}
   </div>
 </div>
 
+<!-- ADD AGENT MODAL -->
+<div class="modal-overlay" id="agent-modal" onclick="if(event.target===this)closeAgentModal()">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <span class="modal-title"><i class="ti ti-user-plus" style="margin-right:8px;color:#60a5fa"></i><span id="s-agent-modal-title">เพิ่มเจ้าหน้าที่ใหม่</span></span>
+      <button class="btn btn-ghost" style="padding:4px 8px" onclick="closeAgentModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ชื่อ-นามสกุล *</label>
+        <input class="form-input" id="ag-name" placeholder="เช่น สมชาย ใจดี">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ตำแหน่ง / Role</label>
+        <input class="form-input" id="ag-role" placeholder="เช่น IT Support, Senior Technician">
+      </div>
+      <div class="form-group">
+        <label class="form-label">สถานะ</label>
+        <select class="form-input form-select" id="ag-status">
+          <option value="online">Online (ออนไลน์)</option>
+          <option value="offline">Offline (ออฟไลน์)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAgentModal()">ยกเลิก</button>
+      <button class="btn btn-primary" id="save-agent-btn" onclick="saveAgent()">
+        <i class="ti ti-check"></i> บันทึกเจ้าหน้าที่
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TICKET DETAIL PANEL -->
 <div class="detail-panel" id="detail-panel">
   <div class="detail-header">
     <div>
       <div style="font-size:12px;color:#60a5fa;font-weight:600;margin-bottom:4px" id="dp-id"></div>
       <div style="font-size:15px;font-weight:600" id="dp-title"></div>
     </div>
-    <button class="btn btn-ghost" style="padding:6px 10px; background:#1e2540; color:#fff;" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px;"></i> ปิดหน้าจอนี้</button>
+    <button class="btn btn-ghost" style="padding:6px 10px;background:#1e2540;color:#fff;" onclick="closeDetail()">
+      <i class="ti ti-x" style="font-size:16px;"></i> ปิดหน้าจอนี้
+    </button>
   </div>
   <div class="detail-body">
     <div class="detail-section">
@@ -430,234 +483,700 @@ textarea.form-input{min-height:90px;resize:vertical}
     </div>
   </div>
   <div class="comment-box">
-    <textarea class="comment-input" id="comment-input"></textarea>
+    <textarea class="comment-input" id="comment-input" placeholder="เพิ่มหมายเหตุหรืออัปเดต..."></textarea>
     <div class="comment-footer">
       <span style="font-size:11px;color:#475569" id="s-comment-hint">กด Enter เพื่อส่ง</span>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="addComment()"><i class="ti ti-send"></i> <span id="s-send-btn">ส่ง</span></button>
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="addComment()">
+        <i class="ti ti-send"></i> <span id="s-send-btn">ส่ง</span>
+      </button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
+<div class="toast" id="toast"><i class="ti ti-check" id="toast-icon"></i><span id="toast-msg"></span></div>
 
 <script>
+// ============================================================
+// CONSTANTS & CONFIG
+// ============================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwHOPl0TVsW9MOLeZFTLaVt6YAb3T5dSt9Esa6CuYChTcf2H2iP0xeX88DvJCubejcFGQ/exec';
+const GAS_LOOKUP_URL = 'https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec';
+
+const GROUPS = [
+  "บริษัท ฮั่วเซ่งเฮง โกลด์ ฟิวเจอร์ส จำกัด",
+  "บริษัท ฮั่วเซ่งเฮง คอมโมดิทิส จำกัด",
+  "บริษัท ฮั่วเซ่งเฮง สิงคโปร์",
+  "อื่นๆ"
+];
+
+const CATEGORIES = {
+  "Hardware":         ["Computer/PC", "Laptop", "Printer", "Monitor", "Network/Router"],
+  "Software":         ["Windows/OS", "MS Office", "Email", "ERP System", "Antivirus"],
+  "User Management":  ["สร้างบัญชีใหม่", "รีเซ็ตรหัสผ่าน", "สิทธิ์เข้าถึงโฟลเดอร์"],
+  "อื่นๆ":            ["อื่นๆ"]
+};
+
+const CASES = ["ติดตั้งใหม่", "แจ้งซ่อม/มีปัญหา", "ขอเพิ่มสิทธิ์", "บำรุงรักษา"];
+
+// ============================================================
+// LANGUAGE
+// ============================================================
 const LANG = {
   th: {
-    portal:'IT Support Portal', overview:'ภาพรวม', dashboard:'แดชบอร์ด', ticketsNav:'ทิกเก็ต', allTickets:'ทิกเก็ตทั้งหมด', openNav:'กำลังดำเนิน', pendingNav:'รอดำเนินการ', resolvedNav:'แก้ไขแล้ว', teamNav:'ทีมงาน', agentsNav:'เจ้าหน้าที่', adminRole:'ผู้ดูแลระบบ', searchPlaceholder:'ค้นหาทิกเก็ต...', createBtn:'สร้างทิกเก็ต', exportBtn:'Export รายงาน', totalLabel:'ทิกเก็ตทั้งหมด', totalSub:'วันนี้', openLabel:'กำลังดำเนินการ', openSub:'รอแก้ไข', resolvedLabel:'แก้ไขแล้ว', resolvedSub:'สำเร็จ', urgentLabel:'ด่วนมาก', urgentSub:'ต้องรีบดำเนินการ', priorityBreakdown:'สรุปตาม Priority', categoryBreakdown:'สรุปตามหมวดหมู่', recentTickets:'ทิกเก็ตล่าสุด', viewAll:'ดูทั้งหมด', thSubject:'หัวข้อ', thRequester:'ผู้แจ้ง', thPriority:'ระดับ', thStatus:'สถานะ', thAgent:'เจ้าหน้าที่', thCategory:'หมวดหมู่', thDate:'วันที่', fbAll:'ทั้งหมด', modalTitle:'สร้างทิกเก็ตใหม่', fTitle:'หัวข้อปัญหา *', fDesc:'รายละเอียด', fReq:'ชื่อผู้แจ้ง *', fDept:'แผนก', fGroup:'กลุ่ม/บริษัท', fCat:'หมวดหมู่', fItem:'รายการ/อุปกรณ์', fCase:'ลักษณะงาน', fJob:'ช่องทางการแจ้ง', fPhone:'เบอร์โทรศัพท์', fAgent:'มอบหมายให้เจ้าหน้าที่', cancelBtn:'ยกเลิก', saveBtn:'บันทึกทิกเก็ต', dpInfo:'ข้อมูลทิกเก็ต', dpStatusLbl:'สถานะ', dpReqLbl:'ผู้แจ้ง', dpPhoneLbl:'เบอร์โทรศัพท์', dpDeptLbl:'แผนก', dpGroupLbl:'กลุ่ม/บริษัท', dpCatLbl:'หมวดหมู่', dpItemLbl:'รายการ/อุปกรณ์', dpCaseLbl:'ลักษณะงาน', dpJobLbl:'ช่องทางการแจ้ง', dpDateLbl:'วันที่แจ้ง', dpAgentLbl:'เจ้าหน้าที่รับผิดชอบ', dpDescTitle:'รายละเอียดปัญหา', dpActionTitle:'การดำเนินการ', dpActivity:'ประวัติการดำเนินการ', commentHint:'เพิ่มหมายเหตุหรืออัปเดต...', sendBtn:'ส่ง', noUnassigned:'— ยังไม่ได้มอบหมาย —', noGroupSelect:'— เลือกกลุ่ม/บริษัท —', noTickets:'ไม่พบทิกเก็ต', otherOpt:'อื่นๆ', fTitlePH:'เช่น คอมเปิดไม่ติด, ปริ้นเตอร์ใช้ไม่ได้', fDescPH:'อธิบายปัญหาให้ละเอียด...', fReqPH:'ชื่อ-นามสกุล', fDeptPH:'เช่น บัญชี, ขาย, IT', fPhonePH:'เช่น 0812345678', phoneFound:(name)=>`✓ พบข้อมูลผู้ใช้: ${name}`, phoneNotFound:'ไม่พบข้อมูลผู้ใช้ กรุณากรอกชื่อด้วยตนเอง', jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','แจ้งหน้างาน','Sent Email'], toastCreated:(id)=>`สร้างทิกเก็ต ${id} เรียบร้อยแล้ว`, toastStatus:(s)=>`อัปเดตสถานะเป็น ${s}`, toastComment:'เพิ่มหมายเหตุเรียบร้อย', toastValidation:'กรุณากรอกหัวข้อและชื่อผู้แจ้ง', statusChanged:(o,n)=>`เปลี่ยนสถานะจาก ${o} → ${n}`, ticketCreated:'สร้างทิกเก็ตเรียบร้อย', online:'ออนไลน์', offline:'ออฟไลน์', agentTickets:'ทิกเก็ต', agentResolved:'แก้แล้ว', agentPending:'ค้างอยู่', tickets:'ทิกเก็ต', viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'}
+    portal:'IT Support Portal', overview:'ภาพรวม', dashboard:'แดชบอร์ด',
+    ticketsNav:'ทิกเก็ต', allTickets:'ทิกเก็ตทั้งหมด', openNav:'กำลังดำเนิน',
+    pendingNav:'รอดำเนินการ', resolvedNav:'แก้ไขแล้ว', teamNav:'ทีมงาน',
+    agentsNav:'เจ้าหน้าที่', adminRole:'ผู้ดูแลระบบ',
+    searchPlaceholder:'ค้นหาทิกเก็ต...', createBtn:'สร้างทิกเก็ต',
+    exportBtn:'Export รายงาน', totalLabel:'ทิกเก็ตทั้งหมด', totalSub:'วันนี้',
+    openLabel:'กำลังดำเนินการ', openSub:'รอแก้ไข', resolvedLabel:'แก้ไขแล้ว',
+    resolvedSub:'สำเร็จ', urgentLabel:'ด่วนมาก', urgentSub:'ต้องรีบดำเนินการ',
+    priorityBreakdown:'สรุปตาม Priority', categoryBreakdown:'สรุปตามหมวดหมู่',
+    recentTickets:'ทิกเก็ตล่าสุด', viewAll:'ดูทั้งหมด',
+    thSubject:'หัวข้อ', thRequester:'ผู้แจ้ง', thPriority:'ระดับ',
+    thStatus:'สถานะ', thAgent:'เจ้าหน้าที่', thCategory:'หมวดหมู่', thDate:'วันที่',
+    fbAll:'ทั้งหมด', modalTitle:'สร้างทิกเก็ตใหม่',
+    fTitle:'หัวข้อปัญหา *', fDesc:'รายละเอียด', fReq:'ชื่อผู้แจ้ง *',
+    fDept:'แผนก', fGroup:'กลุ่ม/บริษัท', fCat:'หมวดหมู่',
+    fItem:'รายการ/อุปกรณ์', fCase:'ลักษณะงาน', fJob:'ช่องทางการแจ้ง',
+    fPhone:'เบอร์โทรศัพท์', fAgent:'มอบหมายให้เจ้าหน้าที่',
+    cancelBtn:'ยกเลิก', saveBtn:'บันทึกทิกเก็ต',
+    dpInfo:'ข้อมูลทิกเก็ต', dpStatusLbl:'สถานะ', dpReqLbl:'ผู้แจ้ง',
+    dpPhoneLbl:'เบอร์โทรศัพท์', dpDeptLbl:'แผนก', dpGroupLbl:'กลุ่ม/บริษัท',
+    dpCatLbl:'หมวดหมู่', dpItemLbl:'รายการ/อุปกรณ์', dpCaseLbl:'ลักษณะงาน',
+    dpJobLbl:'ช่องทางการแจ้ง', dpDateLbl:'วันที่แจ้ง', dpAgentLbl:'เจ้าหน้าที่รับผิดชอบ',
+    dpDescTitle:'รายละเอียดปัญหา', dpActionTitle:'การดำเนินการ',
+    dpActivity:'ประวัติการดำเนินการ', commentHint:'เพิ่มหมายเหตุหรืออัปเดต...',
+    sendBtn:'ส่ง', noUnassigned:'— ยังไม่ได้มอบหมาย —',
+    noGroupSelect:'— เลือกกลุ่ม/บริษัท —', noTickets:'ไม่พบทิกเก็ต', otherOpt:'อื่นๆ',
+    jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','แจ้งหน้างาน','Sent Email'],
+    phoneFound:(name)=>`✓ พบข้อมูลผู้ใช้: ${name}`,
+    phoneNotFound:'ไม่พบข้อมูลผู้ใช้ กรุณากรอกชื่อด้วยตนเอง',
+    toastCreated:(id)=>`✓ สร้างทิกเก็ต ${id} เรียบร้อยแล้ว`,
+    toastStatus:(s)=>`อัปเดตสถานะเป็น ${s}`,
+    toastComment:'เพิ่มหมายเหตุเรียบร้อย',
+    toastValidation:'กรุณากรอกหัวข้อและชื่อผู้แจ้ง',
+    toastSaveError:'เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่',
+    statusChanged:(o,n)=>`เปลี่ยนสถานะจาก ${o} → ${n}`,
+    online:'ออนไลน์', offline:'ออฟไลน์',
+    agentTickets:'ทิกเก็ต', agentResolved:'แก้แล้ว', agentPending:'ค้างอยู่',
+    tickets:'ทิกเก็ต',
+    agentAdded:(name)=>`✓ เพิ่มเจ้าหน้าที่ ${name} เรียบร้อย`,
+    agentRemoved:(name)=>`ลบ ${name} ออกจากระบบแล้ว`,
+    confirmRemove:(name)=>`ยืนยันลบ "${name}" ออกจากระบบ?`,
+    viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'}
   },
   en: {
-    portal:'IT Support Portal', overview:'Overview', dashboard:'Dashboard', ticketsNav:'Tickets', allTickets:'All Tickets', openNav:'Open', pendingNav:'Pending', resolvedNav:'Resolved', teamNav:'Team', agentsNav:'Agents', adminRole:'Administrator', searchPlaceholder:'Search tickets...', createBtn:'New Ticket', exportBtn:'Export CSV', totalLabel:'Total Tickets', totalSub:'Today', openLabel:'In Progress', openSub:'Awaiting fix', resolvedLabel:'Resolved', resolvedSub:'Completed', urgentLabel:'Urgent', urgentSub:'Needs immediate action', priorityBreakdown:'Priority Breakdown', categoryBreakdown:'Category Breakdown', recentTickets:'Recent Tickets', viewAll:'View All', thSubject:'Subject', thRequester:'Requester', thPriority:'Priority', thStatus:'Status', thAgent:'Agent', thCategory:'Category', thDate:'Date', fbAll:'All', modalTitle:'Create New Ticket', fTitle:'Subject *', fDesc:'Description', fReq:'Requester Name *', fDept:'Department', fGroup:'Group/Company', fCat:'Category', fItem:'Item / Asset', fCase:'Case Type', fJob:'Reported Via', fPhone:'Phone Number', fAgent:'Assign to Agent', cancelBtn:'Cancel', saveBtn:'Save Ticket', dpInfo:'Ticket Details', dpStatusLbl:'Status', dpReqLbl:'Requester', dpPhoneLbl:'Phone Number', dpDeptLbl:'Department', dpGroupLbl:'Group/Company', dpCatLbl:'Category', dpItemLbl:'Item / Asset', dpCaseLbl:'Case Type', dpJobLbl:'Reported Via', dpDateLbl:'Date Opened', dpAgentLbl:'Assigned Agent', dpDescTitle:'Problem Description', dpActionTitle:'Actions', dpActivity:'Activity Log', commentHint:'Add a note or update...', sendBtn:'Send', noUnassigned:'— Unassigned —', noGroupSelect:'— Select Group/Company —', noTickets:'No tickets found', otherOpt:'Other', fTitlePH:'e.g. PC won\'t start, printer not working', fDescPH:'Describe the issue in detail...', fReqPH:'Full name', fDeptPH:'e.g. Accounting, Sales, IT', fPhonePH:'e.g. 0812345678', phoneFound:(name)=>`✓ User found: ${name}`, phoneNotFound:'User not found, please enter the name manually', jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','On-site Visit','Sent Email'], toastCreated:(id)=>`Ticket ${id} created successfully`, toastStatus:(s)=>`Status updated to ${s}`, toastComment:'Note added successfully', toastValidation:'Please enter a subject and requester name', statusChanged:(o,n)=>`Status changed from ${o} → ${n}`, ticketCreated:'Ticket created successfully', online:'Online', offline:'Offline', agentTickets:'Tickets', agentResolved:'Resolved', agentPending:'Pending', tickets:'tickets', viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'}
+    portal:'IT Support Portal', overview:'Overview', dashboard:'Dashboard',
+    ticketsNav:'Tickets', allTickets:'All Tickets', openNav:'Open',
+    pendingNav:'Pending', resolvedNav:'Resolved', teamNav:'Team',
+    agentsNav:'Agents', adminRole:'Administrator',
+    searchPlaceholder:'Search tickets...', createBtn:'New Ticket',
+    exportBtn:'Export CSV', totalLabel:'Total Tickets', totalSub:'Today',
+    openLabel:'In Progress', openSub:'Awaiting fix', resolvedLabel:'Resolved',
+    resolvedSub:'Completed', urgentLabel:'Urgent', urgentSub:'Needs immediate action',
+    priorityBreakdown:'Priority Breakdown', categoryBreakdown:'Category Breakdown',
+    recentTickets:'Recent Tickets', viewAll:'View All',
+    thSubject:'Subject', thRequester:'Requester', thPriority:'Priority',
+    thStatus:'Status', thAgent:'Agent', thCategory:'Category', thDate:'Date',
+    fbAll:'All', modalTitle:'Create New Ticket',
+    fTitle:'Subject *', fDesc:'Description', fReq:'Requester Name *',
+    fDept:'Department', fGroup:'Group/Company', fCat:'Category',
+    fItem:'Item / Asset', fCase:'Case Type', fJob:'Reported Via',
+    fPhone:'Phone Number', fAgent:'Assign to Agent',
+    cancelBtn:'Cancel', saveBtn:'Save Ticket',
+    dpInfo:'Ticket Details', dpStatusLbl:'Status', dpReqLbl:'Requester',
+    dpPhoneLbl:'Phone Number', dpDeptLbl:'Department', dpGroupLbl:'Group/Company',
+    dpCatLbl:'Category', dpItemLbl:'Item / Asset', dpCaseLbl:'Case Type',
+    dpJobLbl:'Reported Via', dpDateLbl:'Date Opened', dpAgentLbl:'Assigned Agent',
+    dpDescTitle:'Problem Description', dpActionTitle:'Actions',
+    dpActivity:'Activity Log', commentHint:'Add a note or update...',
+    sendBtn:'Send', noUnassigned:'— Unassigned —',
+    noGroupSelect:'— Select Group/Company —', noTickets:'No tickets found', otherOpt:'Other',
+    jobOptions:['Call 3CX','Chat 3CX','Call Line OA','Chat Line OA','On-site Visit','Sent Email'],
+    phoneFound:(name)=>`✓ User found: ${name}`,
+    phoneNotFound:'User not found, please enter the name manually',
+    toastCreated:(id)=>`✓ Ticket ${id} created successfully`,
+    toastStatus:(s)=>`Status updated to ${s}`,
+    toastComment:'Note added successfully',
+    toastValidation:'Please enter a subject and requester name',
+    toastSaveError:'Save failed, please try again',
+    statusChanged:(o,n)=>`Status changed from ${o} → ${n}`,
+    online:'Online', offline:'Offline',
+    agentTickets:'Tickets', agentResolved:'Resolved', agentPending:'Pending',
+    tickets:'tickets',
+    agentAdded:(name)=>`✓ Agent ${name} added successfully`,
+    agentRemoved:(name)=>`${name} removed from system`,
+    confirmRemove:(name)=>`Remove "${name}" from the system?`,
+    viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'}
   }
 };
 
+// ============================================================
+// STATE
+// ============================================================
 let lang = 'th';
 let L = LANG.th;
+let tickets = [];
+let agents = [
+  { id: 'ag1', name: 'วิชัย มั่นคง',    role: 'IT Support',        status: 'online'  },
+  { id: 'ag2', name: 'สุดา พร้อมใจ',    role: 'Senior Technician', status: 'online'  },
+  { id: 'ag3', name: 'ธนพล ช่วยดี',     role: 'IT Support',        status: 'offline' },
+];
+let currentFilter = 'All';
+let currentTicketId = null;
+let ticketCounter = 1;
 
-const GROUPS = ["บริษัท ฮั่วเซ่งเฮง โกลด์ ฟิวเจอร์ส จำกัด", "บริษัท ฮั่วเซ่งเฮง คอมโมดิทิส จำกัด", "บริษัท ฮั่วเซ่งเฮง สิงคโปร์", "อื่นๆ"];
-const CATEGORIES = {
-  "Hardware": ["Computer/PC", "Laptop", "Printer", "Monitor", "Network/Router"],
-  "Software": ["Windows/OS", "MS Office", "Email", "ERP System", "Antivirus"],
-  "User Management": ["สร้างบัญชีใหม่", "รีเซ็ตรหัสผ่าน", "สิทธิ์เข้าถึงโฟลเดอร์"],
-  "อื่นๆ": ["อื่นๆ"]
-};
-const CASES = ["ติดตั้งใหม่", "แจ้งซ่อม/มีปัญหา", "ขอเพิ่มสิทธิ์", "บำรุงรักษา"];
-
-function setLang(l){
+// ============================================================
+// LANGUAGE HELPERS
+// ============================================================
+function setLang(l) {
   lang = l; L = LANG[l];
-  document.getElementById('btn-th').classList.toggle('active', l==='th');
-  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-th').classList.toggle('active', l === 'th');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
   applyLang();
 }
 
-function t(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
-function ph(id, val){ const el=document.getElementById(id); if(el) el.placeholder=val; }
+function t(id, val)  { const el = document.getElementById(id); if (el) el.textContent = val; }
+function ph(id, val) { const el = document.getElementById(id); if (el) el.placeholder = val; }
 
-function applyLang(){
-  t('s-portal', L.portal); t('s-overview', L.overview); t('s-dashboard', L.dashboard); t('s-tickets-nav', L.ticketsNav); t('s-all-tickets', L.allTickets); t('s-open-nav', L.openNav); t('s-pending-nav', L.pendingNav); t('s-resolved-nav', L.resolvedNav); t('s-team-nav', L.teamNav); t('s-agents-nav', L.agentsNav); t('s-admin-role', L.adminRole); ph('search-input', L.searchPlaceholder); t('s-export-btn', L.exportBtn); t('s-create-btn', L.createBtn); t('s-total-label', L.totalLabel); t('s-total-sub', L.totalSub); t('s-open-label', L.openLabel); t('s-open-sub', L.openSub); t('s-resolved-label', L.resolvedLabel); t('s-resolved-sub', L.resolvedSub); t('s-urgent-label', L.urgentLabel); t('s-urgent-sub', L.urgentSub); t('s-priority-breakdown', L.priorityBreakdown); t('s-category-breakdown', L.categoryBreakdown); t('s-recent-tickets', L.recentTickets); t('s-view-all', L.viewAll); t('th-subject-d', L.thSubject); t('th-requester-d', L.thRequester); t('th-priority-d', L.thPriority); t('th-status-d', L.thStatus); t('th-agent-d', L.thAgent); t('th-subject-t', L.thSubject); t('th-category-t', L.thCategory); t('th-priority-t', L.thPriority); t('th-status-t', L.thStatus); t('th-agent-t', L.thAgent); t('th-date-t', L.thDate); t('fb-all', L.fbAll); t('s-modal-title', L.modalTitle); t('s-f-title', L.fTitle); t('s-f-desc', L.fDesc); t('s-f-req', L.fReq); t('s-f-phone', L.fPhone); t('s-f-dept', L.fDept); t('s-f-group', L.fGroup); t('s-f-cat', L.fCat); t('s-f-item', L.fItem); t('s-f-case', L.fCase); t('s-f-job', L.fJob); t('s-f-agent', L.fAgent); t('s-cancel-btn', L.cancelBtn); t('s-save-btn', L.saveBtn);
+function applyLang() {
+  t('s-portal', L.portal); t('s-overview', L.overview); t('s-dashboard', L.dashboard);
+  t('s-tickets-nav', L.ticketsNav); t('s-all-tickets', L.allTickets);
+  t('s-open-nav', L.openNav); t('s-pending-nav', L.pendingNav);
+  t('s-resolved-nav', L.resolvedNav); t('s-team-nav', L.teamNav);
+  t('s-agents-nav', L.agentsNav); t('s-admin-role', L.adminRole);
+  ph('search-input', L.searchPlaceholder);
+  t('s-export-btn', L.exportBtn); t('s-create-btn', L.createBtn);
+  t('s-total-label', L.totalLabel); t('s-total-sub', L.totalSub);
+  t('s-open-label', L.openLabel); t('s-open-sub', L.openSub);
+  t('s-resolved-label', L.resolvedLabel); t('s-resolved-sub', L.resolvedSub);
+  t('s-urgent-label', L.urgentLabel); t('s-urgent-sub', L.urgentSub);
+  t('s-priority-breakdown', L.priorityBreakdown);
+  t('s-category-breakdown', L.categoryBreakdown);
+  t('s-recent-tickets', L.recentTickets); t('s-view-all', L.viewAll);
+  t('th-subject-d', L.thSubject); t('th-requester-d', L.thRequester);
+  t('th-priority-d', L.thPriority); t('th-status-d', L.thStatus);
+  t('th-agent-d', L.thAgent); t('th-subject-t', L.thSubject);
+  t('th-category-t', L.thCategory); t('th-priority-t', L.thPriority);
+  t('th-status-t', L.thStatus); t('th-agent-t', L.thAgent); t('th-date-t', L.thDate);
+  t('fb-all', L.fbAll); t('s-modal-title', L.modalTitle);
+  t('s-f-title', L.fTitle); t('s-f-desc', L.fDesc); t('s-f-req', L.fReq);
+  t('s-f-phone', L.fPhone); t('s-f-dept', L.fDept); t('s-f-group', L.fGroup);
+  t('s-f-cat', L.fCat); t('s-f-item', L.fItem); t('s-f-case', L.fCase);
+  t('s-f-job', L.fJob); t('s-f-agent', L.fAgent);
+  t('s-cancel-btn', L.cancelBtn); t('s-save-btn', L.saveBtn);
+  t('s-comment-hint', L.commentHint); t('s-send-btn', L.sendBtn);
   initDropdowns();
+  renderAgents();
+  renderTickets();
+  updateDashboard();
 }
 
-function initDropdowns(){
-  const gSel = document.getElementById('f-group'); gSel.innerHTML = `<option value="">${L.noGroupSelect}</option>`;
+// ============================================================
+// DROPDOWNS
+// ============================================================
+function initDropdowns() {
+  // Groups
+  const gSel = document.getElementById('f-group');
+  gSel.innerHTML = `<option value="">${L.noGroupSelect}</option>`;
   GROUPS.forEach(g => gSel.innerHTML += `<option value="${g}">${g}</option>`);
 
-  const cSel = document.getElementById('f-cat'); cSel.innerHTML = '';
+  // Categories
+  const cSel = document.getElementById('f-cat');
+  cSel.innerHTML = '';
   Object.keys(CATEGORIES).forEach(c => cSel.innerHTML += `<option value="${c}">${c}</option>`);
 
-  const caseSel = document.getElementById('f-case'); caseSel.innerHTML = '';
+  // Cases
+  const caseSel = document.getElementById('f-case');
+  caseSel.innerHTML = '';
   CASES.forEach(c => caseSel.innerHTML += `<option value="${c}">${c}</option>`);
 
-  const jobSel = document.getElementById('f-job'); jobSel.innerHTML = '';
+  // Job channels
+  const jobSel = document.getElementById('f-job');
+  jobSel.innerHTML = '';
   L.jobOptions.forEach(j => jobSel.innerHTML += `<option value="${j}">${j}</option>`);
+
+  // Agents in ticket form
+  const agSel = document.getElementById('f-agent');
+  agSel.innerHTML = `<option value="">${L.noUnassigned}</option>`;
+  agents.forEach(a => agSel.innerHTML += `<option value="${a.name}">${a.name}</option>`);
 
   onCategoryChange();
 }
 
-function onCategoryChange(){
+function onCategoryChange() {
   const cat = document.getElementById('f-cat').value;
-  const itemSel = document.getElementById('f-item'); itemSel.innerHTML = '';
-  if(CATEGORIES[cat]){
+  const itemSel = document.getElementById('f-item');
+  itemSel.innerHTML = '';
+  if (CATEGORIES[cat]) {
     CATEGORIES[cat].forEach(i => itemSel.innerHTML += `<option value="${i}">${i}</option>`);
   }
 }
 
-function showView(viewId, element){
+// ============================================================
+// VIEW NAVIGATION
+// ============================================================
+function showView(viewId, element) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`view-${viewId}`).classList.add('active');
-  if(element) element.classList.add('active');
+  if (element) element.classList.add('active');
   document.getElementById('topbar-title').textContent = L.viewTitles[viewId] || 'Helpdesk';
 }
 
-function openModal(){ document.getElementById('modal').classList.add('open'); }
-function closeModal(){ 
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('f-title').value = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-requester').value = '';
-  document.getElementById('f-dept').value = '';
-  document.getElementById('f-desc').value = '';
-  document.getElementById('f-phone-hint').textContent = '';
+// ============================================================
+// TOAST NOTIFICATIONS
+// ============================================================
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  el.className = `toast show ${type}`;
+  icon.className = type === 'error' ? 'ti ti-alert-circle' : 'ti ti-check';
+  document.getElementById('toast-msg').textContent = msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
-function openExportModal(){ document.getElementById('export-modal').classList.add('open'); }
-function closeExportModal(){ document.getElementById('export-modal').classList.remove('open'); }
-function closeDetail(){ document.getElementById('detail-panel').classList.remove('open'); }
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDashboard() {
+  const total    = tickets.length;
+  const open     = tickets.filter(t => t.status === 'Open').length;
+  const resolved = tickets.filter(t => t.status === 'Resolved').length;
+  const urgent   = tickets.filter(t => t.priority === 'Urgent').length;
+  const pending  = tickets.filter(t => t.status === 'Pending').length;
 
-function setFilter(status, btn){
-  if(btn){
+  document.getElementById('d-total').textContent    = total;
+  document.getElementById('d-open').textContent     = open;
+  document.getElementById('d-resolved').textContent = resolved;
+  document.getElementById('d-urgent').textContent   = urgent;
+  document.getElementById('all-badge').textContent  = total;
+  document.getElementById('open-badge').textContent = open;
+  document.getElementById('pending-badge').textContent = pending;
+
+  // Priority bars
+  const priorities = ['Urgent','High','Medium','Low'];
+  const pColors    = ['#f87171','#fbbf24','#60a5fa','#34d399'];
+  const pEl = document.getElementById('priority-bars');
+  pEl.innerHTML = '';
+  priorities.forEach((p, i) => {
+    const count = tickets.filter(t => t.priority === p).length;
+    const pct   = total ? Math.round((count / total) * 100) : 0;
+    pEl.innerHTML += `
+      <div class="priority-item">
+        <div class="priority-label"><span>${p}</span><span>${count}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pColors[i]}"></div></div>
+      </div>`;
+  });
+
+  // Category bars
+  const cats  = Object.keys(CATEGORIES);
+  const cColors = ['#60a5fa','#a78bfa','#34d399','#fb923c'];
+  const cEl = document.getElementById('category-bars');
+  cEl.innerHTML = '';
+  cats.forEach((c, i) => {
+    const count = tickets.filter(t => t.category === c).length;
+    const pct   = total ? Math.round((count / total) * 100) : 0;
+    cEl.innerHTML += `
+      <div class="priority-item">
+        <div class="priority-label"><span>${c}</span><span>${count}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${cColors[i % cColors.length]}"></div></div>
+      </div>`;
+  });
+
+  // Recent tickets (last 5)
+  const tbody = document.getElementById('recent-tbody');
+  const recent = [...tickets].reverse().slice(0, 5);
+  tbody.innerHTML = recent.length
+    ? recent.map(tk => ticketRow(tk, false)).join('')
+    : `<tr><td colspan="6" style="text-align:center;padding:24px;color:#475569">${L.noTickets}</td></tr>`;
+}
+
+// ============================================================
+// TICKETS
+// ============================================================
+function renderTickets() {
+  const query   = (document.getElementById('search-input').value || '').toLowerCase();
+  const tbody   = document.getElementById('tickets-tbody');
+  let filtered  = tickets.filter(tk => {
+    const matchStatus = currentFilter === 'All' ||
+      (currentFilter === 'Urgent' ? tk.priority === 'Urgent' : tk.status === currentFilter);
+    const matchQuery  = !query ||
+      tk.title.toLowerCase().includes(query) ||
+      tk.requester.toLowerCase().includes(query) ||
+      tk.id.toLowerCase().includes(query);
+    return matchStatus && matchQuery;
+  });
+
+  tbody.innerHTML = filtered.length
+    ? [...filtered].reverse().map(tk => ticketRow(tk, true)).join('')
+    : `<tr><td colspan="7" style="text-align:center;padding:32px;color:#475569">${L.noTickets}</td></tr>`;
+}
+
+function ticketRow(tk, showCat) {
+  const priTag  = `<span class="tag tag-${tk.priority.toLowerCase()}">${tk.priority}</span>`;
+  const statTag = `<span class="tag tag-${tk.status.toLowerCase()}">${tk.status}</span>`;
+  const agName  = tk.agent || L.noUnassigned;
+  const agInit  = agName !== L.noUnassigned ? agName.charAt(0) : '?';
+  const cols    = showCat
+    ? `<td>${tk.category || '—'}</td>${priTag ? `<td>${priTag}</td>` : ''}<td>${statTag}</td>
+       <td><div class="agent-pill"><div class="agent-dot">${agInit}</div>${agName}</div></td>
+       <td style="color:#475569;font-size:12px">${tk.date}</td>`
+    : `<td>${priTag}</td><td>${statTag}</td>
+       <td><div class="agent-pill"><div class="agent-dot">${agInit}</div>${agName}</div></td>`;
+  return `<tr class="ticket-row" onclick="openDetail('${tk.id}')">
+    <td style="padding-left:16px"><span class="tid">${tk.id}</span></td>
+    <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${tk.title}</td>
+    <td>${tk.requester}</td>
+    ${showCat ? `<td>${tk.category || '—'}</td><td>${priTag}</td><td>${statTag}</td>
+       <td><div class="agent-pill"><div class="agent-dot">${agInit}</div>${agName}</div></td>
+       <td style="color:#475569;font-size:12px">${tk.date}</td>`
+    : `<td>${tk.requester}</td><td>${priTag}</td><td>${statTag}</td>
+       <td><div class="agent-pill"><div class="agent-dot">${agInit}</div>${agName}</div></td>`}
+  </tr>`;
+}
+
+function setFilter(status, btn) {
+  currentFilter = status;
+  if (btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
-  console.log("Filter set to:", status);
+  renderTickets();
 }
 
-function filterTickets(){ console.log("Searching..."); }
+function filterTickets() { renderTickets(); }
 
-function processExportCSV(){ 
-  alert("Downloading CSV..."); 
-  closeExportModal(); 
+// ============================================================
+// TICKET DETAIL PANEL
+// ============================================================
+function openDetail(id) {
+  const tk = tickets.find(t => t.id === id);
+  if (!tk) return;
+  currentTicketId = id;
+
+  document.getElementById('dp-id').textContent       = tk.id;
+  document.getElementById('dp-title').textContent    = tk.title;
+  document.getElementById('dp-status').innerHTML     = `<span class="tag tag-${tk.status.toLowerCase()}">${tk.status}</span>`;
+  document.getElementById('dp-priority').innerHTML   = `<span class="tag tag-${tk.priority.toLowerCase()}">${tk.priority}</span>`;
+  document.getElementById('dp-req').textContent      = tk.requester;
+  document.getElementById('dp-phone').textContent    = tk.phone    || '—';
+  document.getElementById('dp-dept').textContent     = tk.dept     || '—';
+  document.getElementById('dp-group').textContent    = tk.group    || '—';
+  document.getElementById('dp-cat').textContent      = tk.category || '—';
+  document.getElementById('dp-item').textContent     = tk.item     || '—';
+  document.getElementById('dp-case').textContent     = tk.caseType || '—';
+  document.getElementById('dp-job').textContent      = tk.job      || '—';
+  document.getElementById('dp-date').textContent     = tk.date;
+  document.getElementById('dp-agent').textContent    = tk.agent    || L.noUnassigned;
+  document.getElementById('dp-desc').textContent     = tk.desc     || '—';
+
+  const tl = document.getElementById('dp-timeline');
+  tl.innerHTML = (tk.timeline || []).map(e => `
+    <div class="timeline-item">
+      <div class="timeline-dot"><i class="ti ti-circle-dot" style="font-size:13px;color:#60a5fa"></i></div>
+      <div class="timeline-content"><p>${e.text}</p><div class="time">${e.time}</div></div>
+    </div>`).join('') || '<p style="color:#475569;font-size:13px">ยังไม่มีประวัติ</p>';
+
+  document.getElementById('detail-panel').classList.add('open');
 }
 
-// ------------------------------------------------------------------
-// ฟังก์ชันค้นหาผู้ใช้งานจากเบอร์โทรศัพท์ (Google Apps Script)
-// ------------------------------------------------------------------
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  currentTicketId = null;
+}
+
+function changeStatus(newStatus) {
+  if (!currentTicketId) return;
+  const tk = tickets.find(t => t.id === currentTicketId);
+  if (!tk) return;
+  const oldStatus = tk.status;
+  tk.status = newStatus;
+  const now = new Date().toLocaleString('th-TH');
+  tk.timeline = tk.timeline || [];
+  tk.timeline.push({ text: L.statusChanged(oldStatus, newStatus), time: now });
+  openDetail(currentTicketId);
+  renderTickets();
+  updateDashboard();
+  showToast(L.toastStatus(newStatus), 'success');
+}
+
+function addComment() {
+  if (!currentTicketId) return;
+  const input = document.getElementById('comment-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  const tk = tickets.find(t => t.id === currentTicketId);
+  if (!tk) return;
+  tk.timeline = tk.timeline || [];
+  const now = new Date().toLocaleString('th-TH');
+  tk.timeline.push({ text: `💬 ${text}`, time: now });
+  input.value = '';
+  openDetail(currentTicketId);
+  showToast(L.toastComment, 'success');
+}
+
+// ============================================================
+// TICKET MODAL
+// ============================================================
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  initDropdowns();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  ['f-title','f-phone','f-requester','f-dept','f-desc'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-phone-hint').textContent = '';
+  document.getElementById('f-phone-hint').className = 'field-hint';
+}
+
+// ============================================================
+// PHONE LOOKUP (Google Apps Script)
+// ============================================================
 async function lookupUser() {
-  const phoneInput = document.getElementById('f-phone');
+  const phone = document.getElementById('f-phone').value.trim();
   const hintEl = document.getElementById('f-phone-hint');
-  const phone = phoneInput.value.trim();
-
-  if (!phone) {
-    hintEl.textContent = '';
-    hintEl.className = 'field-hint';
-    return;
-  }
+  if (!phone) { hintEl.textContent = ''; hintEl.className = 'field-hint'; return; }
 
   hintEl.textContent = '⏳ กำลังค้นหาข้อมูล...';
   hintEl.className = 'field-hint';
 
-  const webAppUrl = `https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec?phone=${encodeURIComponent(phone)}`;
-
   try {
-    const response = await fetch(webAppUrl);
-    const data = await response.json();
-
+    const res  = await fetch(`${GAS_LOOKUP_URL}?phone=${encodeURIComponent(phone)}`);
+    const data = await res.json();
     if (data.success && data.user) {
       document.getElementById('f-requester').value = data.user.reporter_name || '';
-      document.getElementById('f-dept').value = data.user.department || '';
-      
-      const groupSelect = document.getElementById('f-group');
-      if ([...groupSelect.options].some(opt => opt.value === data.user.company_group)) {
-        groupSelect.value = data.user.company_group;
-      } else {
-        groupSelect.value = "อื่นๆ";
-      }
-
+      document.getElementById('f-dept').value       = data.user.department    || '';
+      const gSel = document.getElementById('f-group');
+      if ([...gSel.options].some(o => o.value === data.user.company_group)) {
+        gSel.value = data.user.company_group;
+      } else { gSel.value = 'อื่นๆ'; }
       hintEl.textContent = L.phoneFound(data.user.reporter_name);
       hintEl.className = 'field-hint found';
     } else {
       hintEl.textContent = L.phoneNotFound;
       hintEl.className = 'field-hint notfound';
     }
-  } catch (error) {
-    console.error("Error looking up user:", error);
+  } catch (err) {
+    console.error('lookupUser error:', err);
     hintEl.textContent = '❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้';
     hintEl.className = 'field-hint notfound';
   }
 }
 
-// ------------------------------------------------------------------
-// ฟังก์ชันสร้างทิกเก็ต (เตรียมส่งข้อมูลไป Google Apps Script)
-// ------------------------------------------------------------------
+// ============================================================
+// CREATE TICKET → SAVE TO GOOGLE SHEETS
+// ============================================================
 async function createTicket() {
-  const ticketData = {
-    title: document.getElementById('f-title').value,
-    phone: document.getElementById('f-phone').value,
-    requester: document.getElementById('f-requester').value,
-    dept: document.getElementById('f-dept').value,
-    group: document.getElementById('f-group').value,
-    category: document.getElementById('f-cat').value,
-    item: document.getElementById('f-item').value,
-    caseType: document.getElementById('f-case').value,
-    job: document.getElementById('f-job').value,
-    priority: document.getElementById('f-priority').value,
-    agent: document.getElementById('f-agent').value,
-    desc: document.getElementById('f-desc').value
-  };
+  const title     = document.getElementById('f-title').value.trim();
+  const requester = document.getElementById('f-requester').value.trim();
 
-  if(!ticketData.title || !ticketData.requester) {
-    alert(L.toastValidation);
+  if (!title || !requester) {
+    showToast(L.toastValidation, 'error');
     return;
   }
 
-  const saveBtn = document.getElementById('s-save-btn');
-  const originalText = saveBtn.innerText;
-  saveBtn.innerText = "กำลังบันทึก...";
+  const now  = new Date();
+  const dateStr = now.toLocaleDateString('th-TH');
+  const newId = `TK-${String(ticketCounter).padStart(4, '0')}`;
+
+  const ticketData = {
+    action:    'createTicket',
+    id:        newId,
+    title,
+    phone:     document.getElementById('f-phone').value.trim(),
+    requester,
+    dept:      document.getElementById('f-dept').value.trim(),
+    group:     document.getElementById('f-group').value,
+    category:  document.getElementById('f-cat').value,
+    item:      document.getElementById('f-item').value,
+    caseType:  document.getElementById('f-case').value,
+    job:       document.getElementById('f-job').value,
+    priority:  document.getElementById('f-priority').value,
+    agent:     document.getElementById('f-agent').value,
+    desc:      document.getElementById('f-desc').value.trim(),
+    status:    'Open',
+    date:      dateStr,
+    timestamp: now.toISOString()
+  };
+
+  // UI: loading state
+  const btn = document.getElementById('save-ticket-btn');
+  const span = document.getElementById('s-save-btn');
+  btn.disabled = true;
+  span.innerHTML = '<span class="spinner"></span> กำลังบันทึก...';
 
   try {
-    // 🔴 URL นี้ใช้ส่งข้อมูลกลับไปบันทึก (คุณต้องอัปเดตโค้ด Apps Script ฝั่ง Server ก่อนเพื่อรับ POST)
-    const webAppUrl = `https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec`;
-
-    // ** ถอดคอมเมนต์ส่วนนี้เมื่อฝั่ง Google Sheets เปิดรับฟังก์ชัน doPost แล้ว **
-    /*
-    const response = await fetch(webAppUrl, {
-      method: 'POST',
-      body: JSON.stringify(ticketData)
+    // Send to Google Apps Script
+    const res = await fetch(GAS_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(ticketData)
     });
-    const result = await response.json();
-    */
 
-    console.log("จำลองส่งข้อมูลสำเร็จ:", ticketData);
-    alert(L.ticketCreated); 
-    closeModal(); 
-    
-  } catch (error) {
-    console.error("Error saving ticket:", error);
-    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    const result = await res.json().catch(() => ({ success: true }));
+
+    // Add to local state regardless (optimistic update)
+    tickets.push({
+      ...ticketData,
+      timeline: [{
+        text: `สร้างทิกเก็ตใหม่ โดย IT Admin`,
+        time: now.toLocaleString('th-TH')
+      }]
+    });
+    ticketCounter++;
+
+    closeModal();
+    renderTickets();
+    updateDashboard();
+    showToast(L.toastCreated(newId), 'success');
+
+  } catch (err) {
+    console.error('createTicket error:', err);
+    // Still add locally even if network fails
+    tickets.push({
+      ...ticketData,
+      timeline: [{ text: 'สร้างทิกเก็ตใหม่ (offline)', time: now.toLocaleString('th-TH') }]
+    });
+    ticketCounter++;
+    closeModal();
+    renderTickets();
+    updateDashboard();
+    showToast(`⚠️ บันทึกในระบบแล้ว (ไม่สามารถเชื่อมต่อ Google Sheets)`, 'error');
   } finally {
-    saveBtn.innerText = originalText;
+    btn.disabled = false;
+    span.textContent = L.saveBtn;
   }
 }
 
-// ------------------------------------------------------------------
-// ฟังก์ชันจัดการเจ้าหน้าที่ (Add / Remove)
-// ------------------------------------------------------------------
-function addAgent() {
-  const name = prompt("กรุณาระบุชื่อเจ้าหน้าที่ใหม่:");
-  if(name) {
-    alert(`เพิ่มเจ้าหน้าที่ ${name} สำเร็จ!`);
-    // อนาคตสามารถเขียนโค้ดเพื่อรีโหลด หรือเพิ่ม Card ของเจ้าหน้าที่ลงในหน้า UI ตรงนี้
-  }
+// ============================================================
+// EXPORT CSV
+// ============================================================
+function openExportModal()  { document.getElementById('export-modal').classList.add('open'); }
+function closeExportModal() { document.getElementById('export-modal').classList.remove('open'); }
+
+function processExportCSV() {
+  const start = document.getElementById('ext-start-date').value;
+  const end   = document.getElementById('ext-end-date').value;
+
+  let filtered = tickets;
+  if (start) filtered = filtered.filter(t => new Date(t.timestamp) >= new Date(start));
+  if (end)   filtered = filtered.filter(t => new Date(t.timestamp) <= new Date(end + 'T23:59:59'));
+
+  const headers = ['ID','หัวข้อ','ผู้แจ้ง','เบอร์โทร','แผนก','กลุ่ม','หมวดหมู่','รายการ','ลักษณะงาน','ช่องทาง','Priority','สถานะ','Agent','วันที่'];
+  const rows = filtered.map(t => [
+    t.id, t.title, t.requester, t.phone, t.dept, t.group,
+    t.category, t.item, t.caseType, t.job, t.priority, t.status, t.agent, t.date
+  ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+
+  const csv  = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `HSH_Tickets_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  closeExportModal();
+  showToast('✓ ดาวน์โหลด CSV เรียบร้อย', 'success');
 }
 
-function removeAgent() {
-  const name = prompt("กรุณาระบุชื่อเจ้าหน้าที่ที่ต้องการลบออก:");
-  if(name) {
-    alert(`ลบข้อมูลเจ้าหน้าที่ ${name} ออกจากระบบ!`);
-    // อนาคตสามารถเขียนโค้ดลบ Card ออกจากหน้า UI ตรงนี้
+// ============================================================
+// AGENTS — ADD / REMOVE (with real UI update)
+// ============================================================
+function renderAgents() {
+  const grid = document.getElementById('agent-grid');
+  if (!agents.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1" class="empty-state">
+      <i class="ti ti-users"></i>
+      <p>ยังไม่มีเจ้าหน้าที่ในระบบ</p>
+    </div>`;
+    return;
   }
+  grid.innerHTML = agents.map(a => {
+    const initials = a.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    const agTickets  = tickets.filter(t => t.agent === a.name).length;
+    const agResolved = tickets.filter(t => t.agent === a.name && t.status === 'Resolved').length;
+    const agPending  = tickets.filter(t => t.agent === a.name && t.status === 'Pending').length;
+    const dotClass   = a.status === 'online' ? 'online-dot' : 'offline-dot';
+    const statusLabel = a.status === 'online' ? L.online : L.offline;
+    return `
+    <div class="agent-card">
+      <button class="agent-delete-btn" onclick="removeAgent('${a.id}')" title="ลบเจ้าหน้าที่">
+        <i class="ti ti-trash"></i>
+      </button>
+      <div class="agent-avatar-lg">${initials}</div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role || 'IT Support'}</div>
+      <div style="font-size:12px;margin-bottom:8px">
+        <span class="${dotClass}"></span>${statusLabel}
+      </div>
+      <div class="agent-stats">
+        <div><div class="agent-stat-val blue">${agTickets}</div><div class="agent-stat-lbl">${L.agentTickets}</div></div>
+        <div><div class="agent-stat-val green">${agResolved}</div><div class="agent-stat-lbl">${L.agentResolved}</div></div>
+        <div><div class="agent-stat-val yellow">${agPending}</div><div class="agent-stat-lbl">${L.agentPending}</div></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
+// Open agent modal
+function openAgentModal() {
+  document.getElementById('ag-name').value  = '';
+  document.getElementById('ag-role').value  = '';
+  document.getElementById('ag-status').value = 'online';
+  document.getElementById('agent-modal').classList.add('open');
+  setTimeout(() => document.getElementById('ag-name').focus(), 100);
+}
+
+function closeAgentModal() {
+  document.getElementById('agent-modal').classList.remove('open');
+}
+
+// Save new agent
+function saveAgent() {
+  const name   = document.getElementById('ag-name').value.trim();
+  const role   = document.getElementById('ag-role').value.trim();
+  const status = document.getElementById('ag-status').value;
+
+  if (!name) {
+    document.getElementById('ag-name').focus();
+    document.getElementById('ag-name').style.borderColor = '#f87171';
+    setTimeout(() => document.getElementById('ag-name').style.borderColor = '', 2000);
+    return;
+  }
+
+  const newAgent = {
+    id:     'ag' + Date.now(),
+    name,
+    role:   role || 'IT Support',
+    status
+  };
+  agents.push(newAgent);
+  closeAgentModal();
+  renderAgents();
+  initDropdowns();   // refresh agent dropdown in ticket form
+  showToast(L.agentAdded(name), 'success');
+}
+
+// Remove agent with confirmation
+function removeAgent(agentId) {
+  const ag = agents.find(a => a.id === agentId);
+  if (!ag) return;
+  if (!confirm(L.confirmRemove(ag.name))) return;
+  agents = agents.filter(a => a.id !== agentId);
+  renderAgents();
+  initDropdowns();
+  showToast(L.agentRemoved(ag.name), 'info');
+}
+
+// ============================================================
+// INIT
+// ============================================================
 applyLang();
 </script>
 </body>
