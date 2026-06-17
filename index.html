@@ -1218,16 +1218,35 @@ async function lookupUser(){
   try{
     const res=await fetch(`${GAS_LOOKUP_URL}?phone=${encodeURIComponent(phone)}`);
     const data=await res.json();
+    console.log('[lookupUser] GAS response:', JSON.stringify(data)); // debug: ดู field จริงใน console
     if(data.success&&data.user){
-      el('f-requester').value=data.user.reporter_name||'';
-      el('f-dept').value=data.user.department||'';
-      // fix #4: ดึง group/company มาด้วย
-      const companyVal=data.user.company_group||data.user.company||'';
+      const u=data.user;
+      // ดึงชื่อ — รองรับหลายชื่อ field
+      const name=u.reporter_name||u.name||u.fullname||u.ชื่อ||'';
+      el('f-requester').value=name;
+      // ดึงแผนก
+      const dept=u.department||u.dept||u.แผนก||'';
+      el('f-dept').value=dept;
+      // ดึง กลุ่ม/บริษัท — รองรับหลายชื่อ field
+      const companyVal=u.company_group||u.company||u.group||u.บริษัท||u.กลุ่ม||'';
       const gSel=el('f-group');
-      const matchOpt=[...gSel.options].find(o=>o.value===companyVal);
-      if(matchOpt) gSel.value=companyVal;
-      else if(companyVal){ gSel.value='อื่นๆ'; }
-      hint.textContent=L.phoneFound(data.user.reporter_name); hint.className='field-hint found';
+      if(companyVal){
+        // ลองหาใน options ที่มี
+        const matchOpt=[...gSel.options].find(o=>o.value.trim()===companyVal.trim());
+        if(matchOpt){
+          gSel.value=matchOpt.value;
+        } else {
+          // ไม่มีใน list → เพิ่ม option ชั่วคราวแล้วเลือก
+          const tempOpt=document.createElement('option');
+          tempOpt.value=companyVal; tempOpt.textContent=companyVal;
+          tempOpt.dataset.temp='1';
+          // ลบ temp เก่าก่อน
+          [...gSel.options].filter(o=>o.dataset.temp).forEach(o=>o.remove());
+          gSel.insertBefore(tempOpt, gSel.options[1]);
+          gSel.value=companyVal;
+        }
+      }
+      hint.textContent=L.phoneFound(name||phone); hint.className='field-hint found';
     } else { hint.textContent=L.phoneNotFound; hint.className='field-hint notfound'; }
   } catch(e){ hint.textContent='❌ ไม่สามารถเชื่อมต่อฐานข้อมูล'; hint.className='field-hint notfound'; }
 }
