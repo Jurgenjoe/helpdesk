@@ -49,7 +49,8 @@ a{color:inherit;text-decoration:none}
 .stat-value.blue{color:#60a5fa}.stat-value.yellow{color:#fbbf24}
 .stat-value.green{color:#34d399}.stat-value.red{color:#f87171}
 .stat-trend{font-size:11px;color:#475569;margin-top:4px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+/* Dashboard row: bars + pie side by side */
+.dash-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
 .card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:16px}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .card-title{font-size:13px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
@@ -61,10 +62,6 @@ a{color:inherit;text-decoration:none}
 .ticket-table th{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid #1e2540;text-align:left;font-weight:600;white-space:nowrap}
 .ticket-table th.sortable{cursor:pointer;user-select:none}
 .ticket-table th.sortable:hover{color:#94a3b8}
-.ticket-table th .sort-icon{margin-left:4px;font-size:10px;opacity:.5}
-.ticket-table th.sort-asc .sort-icon::after{content:'↑';opacity:1}
-.ticket-table th.sort-desc .sort-icon::after{content:'↓';opacity:1}
-.ticket-table th .sort-icon::after{content:'↕'}
 .ticket-row{cursor:pointer;transition:background .1s}
 .ticket-row:hover td{background:#1a2236}
 .ticket-row td{padding:10px;font-size:13px;border-bottom:1px solid #0f1117;vertical-align:middle}
@@ -80,13 +77,6 @@ a{color:inherit;text-decoration:none}
 .filter-btn{padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #1e2540;background:transparent;color:#94a3b8;transition:all .1s}
 .filter-btn.active{background:#1e3a5f;color:#60a5fa;border-color:#1e3a5f}
 .filter-btn:hover{border-color:#334155;color:#e2e8f0}
-/* Pagination */
-.pagination{display:flex;align-items:center;gap:6px;margin-top:14px;justify-content:flex-end}
-.page-btn{padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #1e2540;background:transparent;color:#94a3b8;transition:all .1s;min-width:32px;text-align:center}
-.page-btn:hover{border-color:#334155;color:#e2e8f0}
-.page-btn.active{background:#1e3a5f;color:#60a5fa;border-color:#1e3a5f}
-.page-btn:disabled{opacity:.35;cursor:not-allowed}
-.page-info{font-size:12px;color:#475569;margin:0 6px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:#161b2e;border:1px solid #1e2540;border-radius:16px;width:560px;max-height:88vh;overflow-y:auto}
@@ -113,7 +103,6 @@ textarea.form-input{min-height:90px;resize:vertical}
 .info-item{display:flex;flex-direction:column;gap:4px}
 .info-item label{font-size:11px;color:#475569;text-transform:uppercase;font-weight:600}
 .info-item span{font-size:13px;color:#e2e8f0}
-/* Editable field in detail panel */
 .info-item .edit-field{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:6px;padding:6px 8px;color:#e2e8f0;font-size:13px;outline:none;font-family:inherit;transition:border .15s}
 .info-item .edit-field:focus{border-color:#3b82f6}
 .info-item select.edit-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
@@ -141,7 +130,6 @@ textarea.form-input{min-height:90px;resize:vertical}
 .view{display:none}.view.active{display:block}
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:13.5px;display:none;align-items:center;gap:8px;z-index:200;max-width:380px;border:1px solid}
 .toast.show{display:flex}
-/* Delete button — pill style, visible but not noisy */
 .btn-del{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid #3b1f1f;background:#2a1515;color:#f87171;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
 .btn-del:hover{background:#3b1f1f;border-color:#f87171;transform:scale(1.1)}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
@@ -155,6 +143,11 @@ textarea.form-input{min-height:90px;resize:vertical}
 .import-summary-box{background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:12px 14px;margin-top:12px;font-size:12.5px}
 .agent-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;color:#475569;cursor:pointer;padding:4px;border-radius:6px;font-size:14px;transition:all .15s}
 .agent-delete-btn:hover{background:#3b1f1f;color:#f87171}
+/* Pie chart legend */
+.pie-legend{margin-top:12px}
+.pie-legend-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;color:#94a3b8}
+.pie-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.resolution-required-note{background:#3b2e1e;border:1px solid #fbbf24;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#fbbf24;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -230,9 +223,16 @@ textarea.form-input{min-height:90px;resize:vertical}
         <div class="stat-card"><div class="stat-label" id="s-resolved-label">แก้ไขแล้ว</div><div class="stat-value green" id="d-resolved">0</div><div class="stat-trend" id="s-resolved-sub">สำเร็จ</div></div>
         <div class="stat-card"><div class="stat-label" id="s-urgent-label">ด่วนมาก</div><div class="stat-value red" id="d-urgent">0</div><div class="stat-trend" id="s-urgent-sub">ต้องรีบ</div></div>
       </div>
-      <div class="row2">
+      <!-- fix #12: 3-column layout: priority bars, category bars, pie chart -->
+      <div class="dash-row">
         <div class="card"><div class="card-header"><span class="card-title" id="s-priority-breakdown">Priority Breakdown</span></div><div id="priority-bars"></div></div>
         <div class="card"><div class="card-header"><span class="card-title" id="s-category-breakdown">Category Breakdown</span></div><div id="category-bars"></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">Category Pie Chart</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <canvas id="pie-canvas" width="160" height="160"></canvas>
+            <div class="pie-legend" id="pie-legend" style="width:100%"></div>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-header">
@@ -255,18 +255,12 @@ textarea.form-input{min-height:90px;resize:vertical}
         <button class="filter-btn" onclick="setFilter('Resolved',this)">Resolved</button>
         <button class="filter-btn" onclick="setFilter('Closed',this)">Closed</button>
         <button class="filter-btn" onclick="setFilter('Urgent',this)" style="margin-left:auto">🔴 Urgent</button>
-        <!-- Sort controls -->
+        <!-- fix #6/#7: เฉพาะ dropdown เรียง, ไม่มี pagination -->
         <div style="display:flex;align-items:center;gap:6px;margin-left:8px">
           <span style="font-size:12px;color:#475569">เรียง:</span>
           <select id="sort-field" class="form-input form-select" style="width:130px;padding:5px 28px 5px 10px;font-size:12px;height:32px" onchange="renderTickets()">
-            <option value="date">วันที่</option>
-            <option value="id">ID</option>
-            <option value="priority">Priority</option>
-            <option value="status">สถานะ</option>
+            <option value="date">วันที่ (ใหม่→เก่า)</option>
           </select>
-          <button id="sort-dir-btn" class="btn btn-ghost" style="padding:5px 10px;font-size:12px;height:32px" onclick="toggleSortDir()">
-            <i class="ti ti-sort-descending" id="sort-dir-icon"></i>
-          </button>
         </div>
       </div>
       <div class="card" style="padding:0;overflow:hidden">
@@ -284,8 +278,6 @@ textarea.form-input{min-height:90px;resize:vertical}
           <tbody id="tickets-tbody"></tbody>
         </table>
       </div>
-      <!-- Pagination -->
-      <div id="pagination-bar" class="pagination"></div>
     </div>
 
     <!-- AGENTS -->
@@ -324,6 +316,7 @@ textarea.form-input{min-height:90px;resize:vertical}
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label" id="s-f-dept">แผนก</label><input class="form-input" id="f-dept" placeholder="เช่น บัญชี, ขาย, IT"></div>
+        <!-- fix #4: group dropdown -->
         <div class="form-group"><label class="form-label" id="s-f-group">กลุ่ม/บริษัท</label><select class="form-input form-select" id="f-group"></select></div>
       </div>
       <div class="form-row">
@@ -337,6 +330,11 @@ textarea.form-input{min-height:90px;resize:vertical}
       <div class="form-row">
         <div class="form-group"><label class="form-label">Priority</label><select class="form-input form-select" id="f-priority"><option>Low</option><option selected>Medium</option><option>High</option><option>Urgent</option></select></div>
         <div class="form-group"><label class="form-label" id="s-f-agent">มอบหมายให้เจ้าหน้าที่</label><select class="form-input form-select" id="f-agent"></select></div>
+      </div>
+      <!-- fix #5: date field -->
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">วันที่แจ้ง</label><input type="date" class="form-input" id="f-date"></div>
+        <div class="form-group" style="display:flex;align-items:flex-end"><div style="width:100%"><label class="form-label">เวลาเปิดเคส</label><input type="time" class="form-input" id="f-opentime"></div></div>
       </div>
       <div class="form-group"><label class="form-label" id="s-f-desc">รายละเอียด</label><textarea class="form-input" id="f-desc" placeholder="อธิบายปัญหาให้ละเอียด..."></textarea></div>
     </div>
@@ -420,6 +418,7 @@ textarea.form-input{min-height:90px;resize:vertical}
       <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border-color:#1e3a5f;color:#60a5fa" onclick="toggleEdit()" id="btn-edit-toggle">
         <i class="ti ti-edit"></i> แก้ไข
       </button>
+      <!-- fix #2: ปุ่มปิดข้างปุ่มแก้ไข -->
       <button class="btn btn-ghost" style="padding:6px 10px;background:#1e2540;color:#fff" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px"></i></button>
     </div>
   </div>
@@ -441,6 +440,7 @@ textarea.form-input{min-height:90px;resize:vertical}
           <div class="info-item"><label>ช่องทางรับเคส</label><span id="dp-job"></span></div>
           <div class="info-item"><label>วันที่แจ้ง</label><span id="dp-date"></span></div>
           <div class="info-item"><label>เจ้าหน้าที่</label><span id="dp-agent"></span></div>
+          <!-- fix #9/#11: เวลาเปิดเคส ก่อน เวลาปิดเคส -->
           <div class="info-item"><label>เวลาเปิดเคส</label><span id="dp-open-time"></span></div>
           <div class="info-item"><label>เวลาปิดเคส</label><span id="dp-close-time"></span></div>
           <div class="info-item" style="grid-column:span 2"><label>ระยะเวลา (นาที)</label><span id="dp-duration"></span></div>
@@ -460,7 +460,12 @@ textarea.form-input{min-height:90px;resize:vertical}
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Open')">🔵 Open</button>
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Pending')">🟡 Pending</button>
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Resolved')">🟢 Resolved</button>
-          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Closed')">⚫ Closed</button>
+          <!-- fix #1: Closed ต้องใส่ resolution ก่อน -->
+          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatusClosed()">⚫ Closed</button>
+        </div>
+        <!-- fix #1: คำแนะนำเมื่อยังไม่มี resolution -->
+        <div id="resolution-warning" style="display:none;margin-top:8px" class="resolution-required-note">
+          <i class="ti ti-alert-triangle"></i> กรุณากรอก "วิธีการแก้ไข / Resolution" ในแท็บแก้ไขก่อนปิดเคส
         </div>
       </div>
       <div class="detail-section">
@@ -497,13 +502,14 @@ textarea.form-input{min-height:90px;resize:vertical}
           </div>
           <div class="form-group"><label class="form-label">เจ้าหน้าที่</label><select class="edit-field form-input form-select" id="e-agent"></select></div>
         </div>
+        <!-- fix #9: เวลาเปิดเคส + เวลาปิดเคส ใน edit mode -->
         <div class="form-row">
-          <div class="form-group"><label class="form-label">เวลาเปิดเคส</label><input class="edit-field form-input" id="e-open-time"></div>
-          <div class="form-group"><label class="form-label">เวลาปิดเคส</label><input class="edit-field form-input" id="e-close-time"></div>
+          <div class="form-group"><label class="form-label">เวลาเปิดเคส</label><input class="edit-field form-input" id="e-open-time" placeholder="เช่น 09:30:00"></div>
+          <div class="form-group"><label class="form-label">เวลาปิดเคส</label><input class="edit-field form-input" id="e-close-time" placeholder="เช่น 10:45:00"></div>
         </div>
         <div class="form-group"><label class="form-label">ระยะเวลา (นาที)</label><input class="edit-field form-input" id="e-duration" type="number"></div>
         <div class="form-group"><label class="form-label">รายละเอียด</label><textarea class="edit-field form-input" id="e-desc" style="min-height:80px"></textarea></div>
-        <div class="form-group"><label class="form-label">วิธีการแก้ไข / Resolution</label><textarea class="edit-field form-input" id="e-resolution" style="min-height:80px"></textarea></div>
+        <div class="form-group"><label class="form-label">วิธีการแก้ไข / Resolution</label><textarea class="edit-field form-input" id="e-resolution" style="min-height:80px" placeholder="กรอกวิธีการแก้ไขปัญหา..."></textarea></div>
         <div class="detail-edit-actions">
           <button class="btn btn-primary" onclick="saveEdit()"><i class="ti ti-check"></i> บันทึกการแก้ไข</button>
           <button class="btn btn-ghost" onclick="cancelEdit()"><i class="ti ti-x"></i> ยกเลิก</button>
@@ -540,9 +546,7 @@ const CATEGORIES = {
   'อื่นๆ':           ['อื่นๆ']
 };
 const CASES = ['ติดตั้งใหม่','แจ้งซ่อม/มีปัญหา','ขอเพิ่มสิทธิ์','บำรุงรักษา'];
-const PAGE_SIZE = 30;
 
-// ── Import field options ──
 const FIELD_OPTS = [
   {label:'(ข้ามฟิลด์นี้)',key:''},
   {label:'ID',key:'id'},{label:'วันที่',key:'date'},
@@ -603,10 +607,6 @@ let agents  = JSON.parse(localStorage.getItem(LS_AGENTS)  || 'null') || [
 let currentFilter = 'All', currentTicketId = null;
 let ticketCounter = 1;
 let importRows = [], importColMap = {};
-// Sort state
-let sortField = 'date', sortDir = 'desc'; // desc = ใหม่ไปเก่า
-// Pagination
-let currentPage = 1;
 
 function saveTickets(){ localStorage.setItem(LS_TICKETS, JSON.stringify(tickets)); }
 function saveAgents(){  localStorage.setItem(LS_AGENTS,  JSON.stringify(agents));  }
@@ -628,7 +628,7 @@ const LANG = {
     ticketsNav:'ทิกเก็ต',allTickets:'ทิกเก็ตทั้งหมด',openNav:'กำลังดำเนิน',
     pendingNav:'รอดำเนินการ',resolvedNav:'แก้ไขแล้ว',teamNav:'ทีมงาน',
     agentsNav:'เจ้าหน้าที่',adminRole:'ผู้ดูแลระบบ',
-    searchPlaceholder:'ค้นหาทิกเก็ต...',createBtn:'สร้างทิกเก็ต',
+    searchPlaceholder:'ค้นหาทิกเก็ต (ชื่อ/เจ้าหน้าที่/ID...)',createBtn:'สร้างทิกเก็ต',
     exportBtn:'Export รายงาน',totalLabel:'ทิกเก็ตทั้งหมด',totalSub:'ทั้งหมด',
     openLabel:'กำลังดำเนินการ',openSub:'รอแก้ไข',resolvedLabel:'แก้ไขแล้ว',
     resolvedSub:'สำเร็จ',urgentLabel:'ด่วนมาก',urgentSub:'ต้องรีบ',
@@ -652,6 +652,7 @@ const LANG = {
     toastComment:'เพิ่มหมายเหตุเรียบร้อย',
     toastValidation:'กรุณากรอกหัวข้อและชื่อผู้แจ้ง',
     toastSaved:'บันทึกการแก้ไขเรียบร้อย',
+    toastResolutionRequired:'กรุณากรอก "วิธีการแก้ไข" ก่อนปิดเคส',
     statusChanged:(o,n)=>`เปลี่ยนสถานะ ${o} → ${n}`,
     online:'ออนไลน์',offline:'ออฟไลน์',
     agentTickets:'ทิกเก็ต',agentResolved:'แก้แล้ว',agentPending:'ค้างอยู่',
@@ -660,14 +661,13 @@ const LANG = {
     confirmRemove:n=>`ยืนยันลบ "${n}" ออกจากระบบ?`,
     confirmDeleteTicket:'ยืนยันลบทิกเก็ตนี้ออกจากระบบ?',
     viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'},
-    page:'หน้า', of:'จาก', results:'รายการ'
   },
   en:{
     portal:'IT Support Portal',overview:'Overview',dashboard:'Dashboard',
     ticketsNav:'Tickets',allTickets:'All Tickets',openNav:'Open',
     pendingNav:'Pending',resolvedNav:'Resolved',teamNav:'Team',
     agentsNav:'Agents',adminRole:'Administrator',
-    searchPlaceholder:'Search tickets...',createBtn:'New Ticket',
+    searchPlaceholder:'Search tickets (name/agent/ID...)',createBtn:'New Ticket',
     exportBtn:'Export CSV',totalLabel:'Total Tickets',totalSub:'All time',
     openLabel:'In Progress',openSub:'Awaiting fix',resolvedLabel:'Resolved',
     resolvedSub:'Completed',urgentLabel:'Urgent',urgentSub:'Immediate',
@@ -691,6 +691,7 @@ const LANG = {
     toastComment:'Note added',
     toastValidation:'Please enter subject and requester',
     toastSaved:'Changes saved',
+    toastResolutionRequired:'Please fill in "Resolution" before closing the ticket',
     statusChanged:(o,n)=>`Status ${o} → ${n}`,
     online:'Online',offline:'Offline',
     agentTickets:'Tickets',agentResolved:'Resolved',agentPending:'Pending',
@@ -699,7 +700,6 @@ const LANG = {
     confirmRemove:n=>`Remove "${n}"?`,
     confirmDeleteTicket:'Delete this ticket?',
     viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'},
-    page:'Page', of:'of', results:'results'
   }
 };
 
@@ -724,6 +724,7 @@ function showToast(msg, type='info'){
   toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
+// fix #5: วันที่เป็น วัน/เดือน/ปี พ.ศ.
 function formatThaiDate(raw){
   if(!raw) return '';
   if(!isNaN(raw) && raw>40000 && raw<60000){
@@ -736,38 +737,24 @@ function formatThaiDate(raw){
   return raw;
 }
 
+// fix #5: แปลง date input (yyyy-mm-dd) → วัน/เดือน/ปีพ.ศ.
+function dateInputToThai(val){
+  if(!val) return today();
+  const m = val.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return `${m[3]}/${m[2]}/${+m[1]+543}`;
+  return val;
+}
+
 function today(){
   const d=new Date();
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543}`;
 }
+function todayISO(){
+  const d=new Date();
+  return d.toISOString().slice(0,10);
+}
 
 function genId(){ return `TK-${String(ticketCounter).padStart(4,'0')}`; }
-
-// ── sort helpers ──
-const PRIO_ORDER = {Urgent:4,High:3,Medium:2,Low:1};
-function sortedTickets(list){
-  return [...list].sort((a,b)=>{
-    let va, vb;
-    if(sortField==='date'){
-      va = a.timestamp||a.date||''; vb = b.timestamp||b.date||'';
-    } else if(sortField==='id'){
-      va = parseInt((a.id||'').replace(/\D/g,''))||0;
-      vb = parseInt((b.id||'').replace(/\D/g,''))||0;
-    } else if(sortField==='priority'){
-      va = PRIO_ORDER[a.priority]||0; vb = PRIO_ORDER[b.priority]||0;
-    } else if(sortField==='status'){
-      va = a.status||''; vb = b.status||'';
-    }
-    if(va < vb) return sortDir==='asc'?-1:1;
-    if(va > vb) return sortDir==='asc'?1:-1;
-    return 0;
-  });
-}
-function toggleSortDir(){
-  sortDir = sortDir==='desc'?'asc':'desc';
-  el('sort-dir-icon').className = sortDir==='desc'?'ti ti-sort-descending':'ti ti-sort-ascending';
-  currentPage=1; renderTickets();
-}
 
 // ══════════════════════════════════════════════
 // LANG
@@ -823,12 +810,14 @@ function initDropdowns(){
   agSel.innerHTML=`<option value="">${L.noUnassigned}</option>`;
   agents.forEach(a=>agSel.innerHTML+=`<option value="${a.name}">${a.name}</option>`);
   onCategoryChange();
-  // Also update edit agent select
   const eAgSel=el('e-agent');
   if(eAgSel){
     eAgSel.innerHTML=`<option value="">${L.noUnassigned}</option>`;
     agents.forEach(a=>eAgSel.innerHTML+=`<option value="${a.name}">${a.name}</option>`);
   }
+  // fix #5: set default date to today
+  const fDate=el('f-date'); if(fDate&&!fDate.value) fDate.value=todayISO();
+  const fTime=el('f-opentime'); if(fTime&&!fTime.value) fTime.value=new Date().toTimeString().slice(0,5);
 }
 function onCategoryChange(){
   const cat=el('f-cat').value, itemSel=el('f-item'); itemSel.innerHTML='';
@@ -848,7 +837,7 @@ function showView(viewId, element){
 }
 
 // ══════════════════════════════════════════════
-// DASHBOARD
+// DASHBOARD + PIE CHART (#12)
 // ══════════════════════════════════════════════
 function updateDashboard(){
   const total=tickets.length;
@@ -870,11 +859,16 @@ function updateDashboard(){
 
   const allCats={};
   tickets.forEach(t=>{ const c=t.category||'อื่นๆ'; allCats[c]=(allCats[c]||0)+1; });
-  const catColors=['#60a5fa','#a78bfa','#34d399','#fb923c','#f87171'];
-  el('category-bars').innerHTML=Object.entries(allCats).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([c,cnt],i)=>{
+  const catColors=['#60a5fa','#a78bfa','#34d399','#fb923c','#f87171','#fbbf24','#38bdf8'];
+  const catEntries=Object.entries(allCats).sort((a,b)=>b[1]-a[1]);
+
+  el('category-bars').innerHTML=catEntries.slice(0,5).map(([c,cnt],i)=>{
     const pct=total?Math.round(cnt/total*100):0;
-    return `<div class="priority-item"><div class="priority-label"><span>${c}</span><span>${cnt}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${catColors[i%catColors.length]}"></div></div></div>`;
+    return `<div class="priority-item"><div class="priority-label"><span>${c}</span><span>${cnt} (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${catColors[i%catColors.length]}"></div></div></div>`;
   }).join('');
+
+  // fix #12: Pie Chart
+  drawPieChart(catEntries, catColors, total);
 
   const recent=[...tickets].sort((a,b)=>(b.timestamp||b.date||'').localeCompare(a.timestamp||a.date||'')).slice(0,5);
   el('recent-tbody').innerHTML=recent.length
@@ -882,58 +876,76 @@ function updateDashboard(){
     : `<tr><td colspan="6" style="text-align:center;padding:20px;color:#475569">${L.noTickets}</td></tr>`;
 }
 
+function drawPieChart(entries, colors, total){
+  const canvas=el('pie-canvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=160, H=160, cx=80, cy=80, r=72, ir=36;
+  ctx.clearRect(0,0,W,H);
+  if(!total || !entries.length){
+    ctx.fillStyle='#1e2540'; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0f1117'; ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2); ctx.fill();
+    el('pie-legend').innerHTML='<div style="color:#475569;font-size:12px;text-align:center">ยังไม่มีข้อมูล</div>';
+    return;
+  }
+  let startAngle = -Math.PI/2;
+  const slices=[];
+  entries.forEach(([cat,cnt],i)=>{
+    const angle=(cnt/total)*Math.PI*2;
+    const color=colors[i%colors.length];
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,startAngle,startAngle+angle);
+    ctx.closePath();
+    ctx.fillStyle=color;
+    ctx.fill();
+    slices.push({cat,cnt,color,pct:Math.round(cnt/total*100)});
+    startAngle+=angle;
+  });
+  // donut hole
+  ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2);
+  ctx.fillStyle='#161b2e'; ctx.fill();
+  // center text
+  ctx.fillStyle='#e2e8f0'; ctx.font='bold 18px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(total,cx,cy-6);
+  ctx.font='10px Segoe UI'; ctx.fillStyle='#64748b';
+  ctx.fillText('เคสทั้งหมด',cx,cy+10);
+  // legend
+  el('pie-legend').innerHTML=slices.map(s=>
+    `<div class="pie-legend-item"><div class="pie-legend-dot" style="background:${s.color}"></div><span style="flex:1">${s.cat}</span><span style="color:#e2e8f0;font-weight:600">${s.pct}%</span><span style="color:#475569;margin-left:6px">(${s.cnt})</span></div>`
+  ).join('');
+}
+
 // ══════════════════════════════════════════════
-// TICKETS TABLE + SORT + PAGINATION
+// TICKETS TABLE
 // ══════════════════════════════════════════════
 function renderTickets(){
   if(!L) return;
+  // fix #8: ค้นหาชื่อเจ้าหน้าที่ได้ด้วย
   const q=(el('search-input').value||'').toLowerCase();
   const filtered=tickets.filter(tk=>{
     const ms=currentFilter==='All'||(currentFilter==='Urgent'?tk.priority==='Urgent':tk.status===currentFilter);
-    const mq=!q||(tk.title+tk.requester+tk.id+tk.category).toLowerCase().includes(q);
+    const mq=!q||(tk.title+tk.requester+tk.id+tk.category+(tk.agent||'')).toLowerCase().includes(q);
     return ms&&mq;
   });
-  const sorted=sortedTickets(filtered);
-  const total=sorted.length;
-  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
-  if(currentPage>totalPages) currentPage=totalPages;
-  const start=(currentPage-1)*PAGE_SIZE, end=Math.min(start+PAGE_SIZE,total);
-  const pageItems=sorted.slice(start,end);
+  // fix #6: เรียงจากใหม่ไปเก่าเสมอ
+  const sorted=[...filtered].sort((a,b)=>{
+    const va=a.timestamp||a.date||'', vb=b.timestamp||b.date||'';
+    return vb.localeCompare(va);
+  });
 
   const tbody=el('tickets-tbody');
-  tbody.innerHTML=pageItems.length
-    ? pageItems.map(tk=>ticketRowHTML(tk,true)).join('')
+  tbody.innerHTML=sorted.length
+    ? sorted.map(tk=>ticketRowHTML(tk,true)).join('')
     : `<tr><td colspan="8" style="text-align:center;padding:32px;color:#475569">${L.noTickets}</td></tr>`;
-
-  renderPagination(total, totalPages);
 }
-
-function renderPagination(total, totalPages){
-  const bar=el('pagination-bar');
-  if(total===0){ bar.innerHTML=''; return; }
-  const start=(currentPage-1)*PAGE_SIZE+1, end=Math.min(currentPage*PAGE_SIZE,total);
-  let html=`<span class="page-info">${start}–${end} ${L.of} ${total} ${L.results}</span>`;
-  html+=`<button class="page-btn" onclick="gotoPage(1)" ${currentPage===1?'disabled':''} title="หน้าแรก">«</button>`;
-  html+=`<button class="page-btn" onclick="gotoPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  // page numbers (show up to 5)
-  let pStart=Math.max(1,currentPage-2), pEnd=Math.min(totalPages,pStart+4);
-  if(pEnd-pStart<4) pStart=Math.max(1,pEnd-4);
-  for(let p=pStart;p<=pEnd;p++){
-    html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="gotoPage(${p})">${p}</button>`;
-  }
-  html+=`<button class="page-btn" onclick="gotoPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
-  html+=`<button class="page-btn" onclick="gotoPage(${totalPages})" ${currentPage===totalPages?'disabled':''} title="หน้าสุดท้าย">»</button>`;
-  bar.innerHTML=html;
-}
-
-function gotoPage(p){ currentPage=p; renderTickets(); }
 
 function setFilter(status,btn){
-  currentFilter=status; currentPage=1;
+  currentFilter=status;
   if(btn){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
   renderTickets();
 }
-function filterTickets(){ currentPage=1; renderTickets(); }
+function filterTickets(){ renderTickets(); }
 
 function prioTag(p){ const m={Urgent:'urgent',High:'high',Medium:'medium',Low:'low'}; return `<span class="tag tag-${m[p]||'medium'}">${p||'Medium'}</span>`; }
 function statTag(s){ const m={Open:'open',Pending:'pending',Resolved:'resolved',Closed:'closed'}; return `<span class="tag tag-${m[s]||'open'}">${s||'Open'}</span>`; }
@@ -975,10 +987,10 @@ function openDetail(id){
   const tk=tickets.find(t=>t.id===id); if(!tk) return;
   currentTicketId=id;
   el('comment-input').value='';
-  // reset to view mode
   el('dp-view-mode').style.display='';
   el('dp-edit-mode').style.display='none';
   el('btn-edit-toggle').innerHTML='<i class="ti ti-edit"></i> แก้ไข';
+  el('resolution-warning').style.display='none';
 
   el('dp-id').textContent     = tk.id;
   el('dp-title').textContent  = tk.title||'';
@@ -994,6 +1006,7 @@ function openDetail(id){
   el('dp-job').textContent    = tk.job||tk.via||'—';
   el('dp-date').textContent   = formatThaiDate(tk.date)||'—';
   el('dp-agent').textContent  = tk.agent||'—';
+  // fix #9/#11: เวลาเปิดก่อน เวลาปิด
   el('dp-open-time').textContent  = tk.openTime||'—';
   el('dp-close-time').textContent = tk.closeTime||'—';
   el('dp-duration').textContent   = tk.duration?tk.duration+' นาที':'—';
@@ -1011,12 +1024,48 @@ function closeDetail(){
   currentTicketId=null;
 }
 
+// fix #1: Closed ต้องมี resolution ก่อน
+function changeStatusClosed(){
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  if(!tk.resolution || !tk.resolution.trim()){
+    el('resolution-warning').style.display='flex';
+    showToast(L.toastResolutionRequired,'error');
+    return;
+  }
+  el('resolution-warning').style.display='none';
+  changeStatus('Closed');
+}
+
+function changeStatus(s){
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  const old=tk.status; tk.status=s;
+  // fix #9: บันทึกเวลาปิดเคสอัตโนมัติเมื่อ Closed หรือ Resolved
+  if(s==='Closed'||s==='Resolved'){
+    const now=new Date();
+    if(!tk.closeTime) tk.closeTime=now.toLocaleTimeString('th-TH');
+  }
+  tk.timeline=tk.timeline||[];
+  tk.timeline.push({text:L.statusChanged(old,s),time:new Date().toLocaleString('th-TH')});
+  saveTickets(); openDetail(currentTicketId); renderTickets(); updateDashboard();
+  showToast(L.toastStatus(s),'success');
+}
+
+function addComment(){
+  const txt=el('comment-input').value.trim(); if(!txt) return;
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  tk.timeline=tk.timeline||[];
+  tk.timeline.push({text:`💬 ${txt}`,time:new Date().toLocaleString('th-TH')});
+  el('comment-input').value='';
+  saveTickets(); openDetail(currentTicketId);
+  showToast(L.toastComment,'success');
+}
+
 // ── EDIT MODE ──
 function toggleEdit(){
   const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
   const editMode=el('dp-edit-mode').style.display!=='none';
   if(editMode){ cancelEdit(); return; }
-  // populate edit fields
+  // fix #3: ดึงข้อมูลมาใส่ให้ครบทุก field
   el('e-title').value     = tk.title||'';
   el('e-requester').value = tk.requester||'';
   el('e-phone').value     = tk.phone||'';
@@ -1072,33 +1121,16 @@ function saveEdit(){
   showToast(L.toastSaved,'success');
 }
 
-function changeStatus(s){
-  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  const old=tk.status; tk.status=s;
-  if(s==='Closed'){
-    const now=new Date();
-    tk.closeTime=now.toLocaleTimeString('th-TH');
-  }
-  tk.timeline=tk.timeline||[];
-  tk.timeline.push({text:L.statusChanged(old,s),time:new Date().toLocaleString('th-TH')});
-  saveTickets(); openDetail(currentTicketId); renderTickets(); updateDashboard();
-  showToast(L.toastStatus(s),'success');
-}
-
-function addComment(){
-  const txt=el('comment-input').value.trim(); if(!txt) return;
-  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  tk.timeline=tk.timeline||[];
-  tk.timeline.push({text:`💬 ${txt}`,time:new Date().toLocaleString('th-TH')});
-  el('comment-input').value='';
-  saveTickets(); openDetail(currentTicketId);
-  showToast(L.toastComment,'success');
-}
-
 // ══════════════════════════════════════════════
 // CREATE TICKET
 // ══════════════════════════════════════════════
-function openModal(){ el('modal').classList.add('open'); initDropdowns(); }
+function openModal(){
+  el('modal').classList.add('open');
+  initDropdowns();
+  // fix #5: set date/time defaults
+  el('f-date').value=todayISO();
+  el('f-opentime').value=new Date().toTimeString().slice(0,5);
+}
 function closeModal(){
   el('modal').classList.remove('open');
   ['f-title','f-phone','f-requester','f-dept','f-desc'].forEach(id=>el(id).value='');
@@ -1116,8 +1148,12 @@ async function lookupUser(){
     if(data.success&&data.user){
       el('f-requester').value=data.user.reporter_name||'';
       el('f-dept').value=data.user.department||'';
+      // fix #4: ดึง group/company มาด้วย
+      const companyVal=data.user.company_group||data.user.company||'';
       const gSel=el('f-group');
-      gSel.value=[...gSel.options].some(o=>o.value===data.user.company_group)?data.user.company_group:'อื่นๆ';
+      const matchOpt=[...gSel.options].find(o=>o.value===companyVal);
+      if(matchOpt) gSel.value=companyVal;
+      else if(companyVal){ gSel.value='อื่นๆ'; }
       hint.textContent=L.phoneFound(data.user.reporter_name); hint.className='field-hint found';
     } else { hint.textContent=L.phoneNotFound; hint.className='field-hint notfound'; }
   } catch(e){ hint.textContent='❌ ไม่สามารถเชื่อมต่อฐานข้อมูล'; hint.className='field-hint notfound'; }
@@ -1132,6 +1168,11 @@ async function createTicket(){
   if(!valid){ showToast(L.toastValidation,'error'); return; }
 
   const now=new Date(), newId=genId();
+  // fix #5: วันที่จาก date picker แปลงเป็นไทย
+  const dateVal=el('f-date').value;
+  const thaiDate=dateInputToThai(dateVal);
+  // fix #9: เวลาเปิดเคสจาก time picker
+  const openTimeVal=el('f-opentime').value||now.toLocaleTimeString('th-TH');
   const tkData={
     id:newId, title, requester,
     phone:el('f-phone').value.trim(), dept:el('f-dept').value.trim(),
@@ -1139,9 +1180,10 @@ async function createTicket(){
     item:el('f-item').value, caseType:el('f-case').value,
     job:el('f-job').value, priority:el('f-priority').value,
     agent:el('f-agent').value, desc:el('f-desc').value.trim(),
-    status:'Open', date:today(),
-    openTime:now.toLocaleTimeString('th-TH'),
-    timestamp:now.toISOString(),
+    status:'Open', date:thaiDate,
+    openTime:openTimeVal,
+    closeTime:'',
+    timestamp:new Date(dateVal||now).toISOString(),
     timeline:[{text:'สร้างทิกเก็ตใหม่ โดย IT Admin',time:now.toLocaleString('th-TH')}]
   };
 
@@ -1155,7 +1197,7 @@ async function createTicket(){
 }
 
 // ══════════════════════════════════════════════
-// EXPORT CSV — fix #3: ดึงเวลาปิดเคสด้วย, fix #7: เอาแค่ job เดียว
+// EXPORT CSV — fix #11: เวลาเปิดก่อนปิด
 // ══════════════════════════════════════════════
 function openExportModal(){ el('export-modal').classList.add('open'); }
 function closeExportModal(){ el('export-modal').classList.remove('open'); }
@@ -1164,31 +1206,27 @@ function processExportCSV(){
   let list=tickets;
   if(start) list=list.filter(t=>t.timestamp&&t.timestamp>=start);
   if(end)   list=list.filter(t=>t.timestamp&&t.timestamp<=end+'T23:59:59');
-  // fix #7: ใช้แค่ "ช่องทางรับเคส" (job) คอลัมน์เดียว
-  const headers=['ID','วันที่','หมวดหมู่','ช่องทางรับเคส','ลักษณะงาน','เวลาเปิดเคส','เบอร์โทร','ผู้แจ้ง','บริษัท/กลุ่ม','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','เวลาปิดเคส','ระยะเวลา(นาที)','Priority','สถานะ'];
-  const rows=list.map(t=>{
-    // fix #3: closeTime — ถ้าไม่มีให้คืนค่าว่าง แต่ต้องดึงให้ครบ
-    const closeTime = t.closeTime || (t.status==='Closed'||t.status==='Resolved' ? (t.closeTime||'') : '');
-    return [
-      t.id,
-      formatThaiDate(t.date),
-      t.category,
-      t.job||t.via||'',   // fix #7: รวมเป็นคอลัมน์เดียว
-      t.caseType,
-      t.openTime,
-      t.phone,
-      t.requester,
-      t.group,
-      t.dept,
-      t.agent,
-      t.desc,
-      t.resolution,
-      closeTime,           // fix #3
-      t.duration,
-      t.priority,
-      t.status
-    ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
-  });
+  // fix #11: คอลัมน์ เวลาเปิดเคส อยู่ก่อน เวลาปิดเคส
+  const headers=['ID','วันที่','หมวดหมู่','ช่องทางรับเคส','ลักษณะงาน','เวลาเปิดเคส','เวลาปิดเคส','ระยะเวลา(นาที)','เบอร์โทร','ผู้แจ้ง','บริษัท/กลุ่ม','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','Priority','สถานะ'];
+  const rows=list.map(t=>[
+    t.id,
+    formatThaiDate(t.date),
+    t.category,
+    t.job||t.via||'',
+    t.caseType,
+    t.openTime,      // fix #11
+    t.closeTime||'', // fix #11
+    t.duration,
+    t.phone,
+    t.requester,
+    t.group,
+    t.dept,
+    t.agent,
+    t.desc,
+    t.resolution,
+    t.priority,
+    t.status
+  ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
   const csv=[headers.join(','),...rows].join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
@@ -1198,7 +1236,7 @@ function processExportCSV(){
 }
 
 // ══════════════════════════════════════════════
-// IMPORT CSV / EXCEL — fix #6: ดึง closeTime กลับมาด้วย
+// IMPORT CSV / EXCEL — fix #10: ดึงออกได้
 // ══════════════════════════════════════════════
 function openImportModal(){
   el('import-modal').classList.add('open');
@@ -1264,12 +1302,19 @@ function parseCSVText(text){
   el('btn-do-import').style.display='inline-flex';
 }
 
+// fix #10: แก้ import ให้ดึงทิกเก็ตออกมาได้ — เพิ่ม title fallback ที่ดีขึ้น
 function doImport(){
-  const statusMap={'open':'Open','pending':'Pending','resolved':'Resolved','closed':'Closed',
+  const statusMap={
+    'open':'Open','pending':'Pending','resolved':'Resolved','closed':'Closed',
     'กำลังดำเนินการ':'Open','รอดำเนินการ':'Pending','แก้ไขแล้ว':'Resolved','ปิด':'Closed',
-    'สำเร็จ':'Resolved','เรียบร้อย':'Resolved','complete':'Resolved','done':'Resolved'};
-  const prioMap={'urgent':'Urgent','high':'High','medium':'Medium','low':'Low',
-    'ด่วนมาก':'Urgent','สูง':'High','ปานกลาง':'Medium','ต่ำ':'Low','critical':'Urgent','normal':'Medium'};
+    'สำเร็จ':'Resolved','เรียบร้อย':'Resolved','complete':'Resolved','done':'Resolved',
+    'in progress':'Open','active':'Open'
+  };
+  const prioMap={
+    'urgent':'Urgent','high':'High','medium':'Medium','low':'Low',
+    'ด่วนมาก':'Urgent','สูง':'High','ปานกลาง':'Medium','ต่ำ':'Low',
+    'critical':'Urgent','normal':'Medium','ปกติ':'Medium'
+  };
   let added=0, skipped=0;
 
   importRows.forEach(row=>{
@@ -1277,32 +1322,55 @@ function doImport(){
     Object.entries(importColMap).forEach(([col,key])=>{ if(key&&row[col]!==undefined) mapped[key]=row[col]; });
     if(!Object.values(mapped).some(v=>v)){ skipped++; return; }
 
-    const id=mapped.id||genId();
-    if(tickets.find(t=>t.id===id)){ skipped++; return; }
+    // fix #10: ถ้าไม่มี id ให้สร้างใหม่, อย่า skip เพราะ id ซ้ำถ้าไม่มี id field
+    let id=mapped.id?mapped.id.trim():null;
+    if(!id) id=genId();
+    else if(tickets.find(t=>t.id===id)){ skipped++; return; }
 
-    const title=mapped.title||[mapped.category,mapped.caseType].filter(Boolean).join(' — ')||'นำเข้าจากไฟล์';
+    // fix #10: title fallback ดีขึ้น
+    const title=mapped.title||
+      [mapped.category,mapped.caseType,mapped.item].filter(Boolean).join(' — ')||
+      mapped.desc?.slice(0,50)||
+      'นำเข้าจากไฟล์';
+
     const rawS=(mapped.status||'').trim().toLowerCase();
-    const status=statusMap[rawS]||statusMap[mapped.status]||'Resolved';
+    const status=statusMap[rawS]||'Resolved';
     const rawP=(mapped.priority||'').trim().toLowerCase();
-    const priority=prioMap[rawP]||prioMap[mapped.priority]||'Medium';
+    const priority=prioMap[rawP]||'Medium';
 
-    tickets.push({
+    const tk={
       id, title,
-      requester:mapped.requester||'', phone:mapped.phone||'',
-      dept:mapped.dept||'', group:mapped.group||'',
-      category:mapped.category||'', item:mapped.item||'',
+      requester:mapped.requester||'',
+      phone:mapped.phone||'',
+      dept:mapped.dept||'',
+      group:mapped.group||'',
+      category:mapped.category||'',
+      item:mapped.item||'',
       caseType:mapped.caseType||'',
-      job:mapped.job||'',   // fix #6 + #7: เก็บแค่ job
+      job:mapped.job||'',
       agent:mapped.agent||'',
-      desc:mapped.desc||'', resolution:mapped.resolution||'',
+      desc:mapped.desc||'',
+      resolution:mapped.resolution||'',
       date:formatThaiDate(mapped.date)||today(),
       openTime:mapped.openTime||'',
-      closeTime:mapped.closeTime||'',   // fix #6: เก็บ closeTime ด้วย
+      closeTime:mapped.closeTime||'',
       duration:mapped.duration||'',
       priority, status,
-      timestamp: mapped.date ? new Date().toISOString() : new Date().toISOString(),
+      timestamp:mapped.date ? (() => {
+        try {
+          // พยายามแปลง date string เป็น ISO
+          const d=mapped.date;
+          if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(d)){
+            const parts=d.replace(/-/g,'/').split('/');
+            const y=parseInt(parts[2])>2500?parseInt(parts[2])-543:parseInt(parts[2]);
+            return new Date(y,parseInt(parts[1])-1,parseInt(parts[0])).toISOString();
+          }
+          return new Date(d).toISOString()||new Date().toISOString();
+        } catch(e){ return new Date().toISOString(); }
+      })() : new Date().toISOString(),
       timeline:[{text:'นำเข้าจากไฟล์ Excel/CSV',time:new Date().toLocaleString('th-TH')}]
-    });
+    };
+    tickets.push(tk);
     const num=parseInt((id||'').replace(/[^\d]/g,''))||0;
     if(num>=ticketCounter) ticketCounter=num+1;
     added++;
