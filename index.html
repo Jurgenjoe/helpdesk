@@ -35,8 +35,8 @@ a{color:inherit;text-decoration:none}
 .btn-primary:hover{background:#1e40af}
 .btn-ghost{background:transparent;color:#94a3b8;border:1px solid #1e2540}
 .btn-ghost:hover{background:#1e2540;color:#e2e8f0}
-.btn-danger{background:transparent;color:#f87171;border:1px solid #f87171}
-.btn-danger:hover{background:#3b1f1f}
+.btn-danger{background:#3b1f1f;color:#f87171;border:1px solid #f87171}
+.btn-danger:hover{background:#4f2020}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .lang-toggle{display:flex;background:#0f1117;border:1px solid #1e2540;border-radius:8px;overflow:hidden;flex-shrink:0}
 .lang-btn{padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;font-family:inherit;transition:all .15s}
@@ -58,7 +58,13 @@ a{color:inherit;text-decoration:none}
 .bar-track{background:#1e2540;border-radius:4px;height:6px}
 .bar-fill{height:6px;border-radius:4px}
 .ticket-table{width:100%;border-collapse:collapse}
-.ticket-table th{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid #1e2540;text-align:left;font-weight:600}
+.ticket-table th{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid #1e2540;text-align:left;font-weight:600;white-space:nowrap}
+.ticket-table th.sortable{cursor:pointer;user-select:none}
+.ticket-table th.sortable:hover{color:#94a3b8}
+.ticket-table th .sort-icon{margin-left:4px;font-size:10px;opacity:.5}
+.ticket-table th.sort-asc .sort-icon::after{content:'↑';opacity:1}
+.ticket-table th.sort-desc .sort-icon::after{content:'↓';opacity:1}
+.ticket-table th .sort-icon::after{content:'↕'}
 .ticket-row{cursor:pointer;transition:background .1s}
 .ticket-row:hover td{background:#1a2236}
 .ticket-row td{padding:10px;font-size:13px;border-bottom:1px solid #0f1117;vertical-align:middle}
@@ -70,10 +76,17 @@ a{color:inherit;text-decoration:none}
 .tag-resolved{background:#1e3b2e;color:#34d399}.tag-closed{background:#1e2540;color:#64748b}
 .agent-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8}
 .agent-dot{width:22px;height:22px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#60a5fa}
-.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
 .filter-btn{padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #1e2540;background:transparent;color:#94a3b8;transition:all .1s}
 .filter-btn.active{background:#1e3a5f;color:#60a5fa;border-color:#1e3a5f}
 .filter-btn:hover{border-color:#334155;color:#e2e8f0}
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:6px;margin-top:14px;justify-content:flex-end}
+.page-btn{padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #1e2540;background:transparent;color:#94a3b8;transition:all .1s;min-width:32px;text-align:center}
+.page-btn:hover{border-color:#334155;color:#e2e8f0}
+.page-btn.active{background:#1e3a5f;color:#60a5fa;border-color:#1e3a5f}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+.page-info{font-size:12px;color:#475569;margin:0 6px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:#161b2e;border:1px solid #1e2540;border-radius:16px;width:560px;max-height:88vh;overflow-y:auto}
@@ -90,7 +103,7 @@ a{color:inherit;text-decoration:none}
 textarea.form-input{min-height:90px;resize:vertical}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-footer{padding:16px 22px;border-top:1px solid #1e2540;display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#161b2e}
-.detail-panel{display:none;position:fixed;right:0;top:0;bottom:0;width:540px;background:#161b2e;border-left:1px solid #1e2540;z-index:50;flex-direction:column;overflow:hidden}
+.detail-panel{display:none;position:fixed;right:0;top:0;bottom:0;width:580px;background:#161b2e;border-left:1px solid #1e2540;z-index:50;flex-direction:column;overflow:hidden}
 .detail-panel.open{display:flex}
 .detail-header{padding:16px 20px;border-bottom:1px solid #1e2540;display:flex;justify-content:space-between;align-items:center}
 .detail-body{flex:1;overflow-y:auto;padding:20px}
@@ -100,6 +113,11 @@ textarea.form-input{min-height:90px;resize:vertical}
 .info-item{display:flex;flex-direction:column;gap:4px}
 .info-item label{font-size:11px;color:#475569;text-transform:uppercase;font-weight:600}
 .info-item span{font-size:13px;color:#e2e8f0}
+/* Editable field in detail panel */
+.info-item .edit-field{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:6px;padding:6px 8px;color:#e2e8f0;font-size:13px;outline:none;font-family:inherit;transition:border .15s}
+.info-item .edit-field:focus{border-color:#3b82f6}
+.info-item select.edit-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
+.detail-edit-actions{display:flex;gap:8px;margin-top:12px}
 .timeline-item{display:flex;gap:12px;margin-bottom:16px}
 .timeline-dot{width:28px;height:28px;border-radius:50%;background:#1e2540;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
 .timeline-content{flex:1}
@@ -107,7 +125,7 @@ textarea.form-input{min-height:90px;resize:vertical}
 .timeline-content .time{font-size:11px;color:#475569;margin-top:3px}
 .comment-box{padding:12px 20px;border-top:1px solid #1e2540}
 .comment-input{width:100%;background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:13px;resize:none;font-family:inherit;outline:none;min-height:70px}
-.comment-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.comment-footer{display:flex;justify-content:flex-end;margin-top:8px}
 .agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .agent-card{background:#161b2e;border:1px solid #1e2540;border-radius:12px;padding:18px;text-align:center;position:relative}
 .agent-avatar-lg{width:52px;height:52px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#60a5fa;margin:0 auto 10px}
@@ -123,8 +141,9 @@ textarea.form-input{min-height:90px;resize:vertical}
 .view{display:none}.view.active{display:block}
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:13.5px;display:none;align-items:center;gap:8px;z-index:200;max-width:380px;border:1px solid}
 .toast.show{display:flex}
-.agent-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;color:#475569;cursor:pointer;padding:4px;border-radius:6px;font-size:14px;transition:all .15s}
-.agent-delete-btn:hover{background:#3b1f1f;color:#f87171}
+/* Delete button — pill style, visible but not noisy */
+.btn-del{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid #3b1f1f;background:#2a1515;color:#f87171;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
+.btn-del:hover{background:#3b1f1f;border-color:#f87171;transform:scale(1.1)}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-state{text-align:center;padding:48px 24px;color:#475569}
@@ -134,9 +153,8 @@ textarea.form-input{min-height:90px;resize:vertical}
 .col-map-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;align-items:center}
 .col-name-badge{background:#1e2540;border-radius:6px;padding:7px 10px;font-size:12.5px;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .import-summary-box{background:#0f1117;border:1px solid #1e2540;border-radius:8px;padding:12px 14px;margin-top:12px;font-size:12.5px}
-/* Close warning box */
-.close-warning{background:#2d1a00;border:1px solid #92400e;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#fbbf24;display:none}
-.close-warning.show{display:block}
+.agent-delete-btn{position:absolute;top:8px;right:8px;background:transparent;border:none;color:#475569;cursor:pointer;padding:4px;border-radius:6px;font-size:14px;transition:all .15s}
+.agent-delete-btn:hover{background:#3b1f1f;color:#f87171}
 </style>
 </head>
 <body>
@@ -237,6 +255,19 @@ textarea.form-input{min-height:90px;resize:vertical}
         <button class="filter-btn" onclick="setFilter('Resolved',this)">Resolved</button>
         <button class="filter-btn" onclick="setFilter('Closed',this)">Closed</button>
         <button class="filter-btn" onclick="setFilter('Urgent',this)" style="margin-left:auto">🔴 Urgent</button>
+        <!-- Sort controls -->
+        <div style="display:flex;align-items:center;gap:6px;margin-left:8px">
+          <span style="font-size:12px;color:#475569">เรียง:</span>
+          <select id="sort-field" class="form-input form-select" style="width:130px;padding:5px 28px 5px 10px;font-size:12px;height:32px" onchange="renderTickets()">
+            <option value="date">วันที่</option>
+            <option value="id">ID</option>
+            <option value="priority">Priority</option>
+            <option value="status">สถานะ</option>
+          </select>
+          <button id="sort-dir-btn" class="btn btn-ghost" style="padding:5px 10px;font-size:12px;height:32px" onclick="toggleSortDir()">
+            <i class="ti ti-sort-descending" id="sort-dir-icon"></i>
+          </button>
+        </div>
       </div>
       <div class="card" style="padding:0;overflow:hidden">
         <table class="ticket-table" style="width:100%">
@@ -248,11 +279,13 @@ textarea.form-input{min-height:90px;resize:vertical}
             <th id="th-status-t">สถานะ</th>
             <th id="th-agent-t">เจ้าหน้าที่</th>
             <th id="th-date-t">วันที่</th>
-            <th></th>
+            <th style="width:44px"></th>
           </tr></thead>
           <tbody id="tickets-tbody"></tbody>
         </table>
       </div>
+      <!-- Pagination -->
+      <div id="pagination-bar" class="pagination"></div>
     </div>
 
     <!-- AGENTS -->
@@ -383,71 +416,107 @@ textarea.form-input{min-height:90px;resize:vertical}
 <div class="detail-panel" id="detail-panel">
   <div class="detail-header">
     <div><div style="font-size:12px;color:#60a5fa;font-weight:600;margin-bottom:4px" id="dp-id"></div><div style="font-size:15px;font-weight:600" id="dp-title"></div></div>
-    <button class="btn btn-ghost" style="padding:6px 10px;background:#1e2540;color:#fff" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px"></i> ปิด</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border-color:#1e3a5f;color:#60a5fa" onclick="toggleEdit()" id="btn-edit-toggle">
+        <i class="ti ti-edit"></i> แก้ไข
+      </button>
+      <button class="btn btn-ghost" style="padding:6px 10px;background:#1e2540;color:#fff" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px"></i></button>
+    </div>
   </div>
   <div class="detail-body">
-    <div class="detail-section">
-      <div class="detail-section-title">ข้อมูลทิกเก็ต</div>
-      <div class="info-grid">
-        <div class="info-item"><label>สถานะ</label><span id="dp-status"></span></div>
-        <div class="info-item"><label>Priority</label><span id="dp-priority"></span></div>
-        <div class="info-item"><label>ผู้แจ้ง</label><span id="dp-req"></span></div>
-        <div class="info-item"><label>เบอร์โทร</label><span id="dp-phone"></span></div>
-        <div class="info-item"><label>แผนก</label><span id="dp-dept"></span></div>
-        <div class="info-item"><label>บริษัท/กลุ่ม</label><span id="dp-group"></span></div>
-        <div class="info-item"><label>หมวดหมู่</label><span id="dp-cat"></span></div>
-        <div class="info-item"><label>รายการ/อุปกรณ์</label><span id="dp-item"></span></div>
-        <div class="info-item"><label>ลักษณะงาน</label><span id="dp-case"></span></div>
-        <div class="info-item"><label>ช่องทางรับเคส</label><span id="dp-job"></span></div>
-        <div class="info-item"><label>วันที่แจ้ง</label><span id="dp-date"></span></div>
-        <div class="info-item"><label>เจ้าหน้าที่</label><span id="dp-agent"></span></div>
-        <div class="info-item"><label>เวลาเปิดเคส</label><span id="dp-open-time"></span></div>
-        <div class="info-item"><label>เวลาปิดเคส</label><span id="dp-close-time"></span></div>
-        <div class="info-item" style="grid-column:span 2"><label>ระยะเวลา (นาที)</label><span id="dp-duration"></span></div>
+    <!-- View mode -->
+    <div id="dp-view-mode">
+      <div class="detail-section">
+        <div class="detail-section-title">ข้อมูลทิกเก็ต</div>
+        <div class="info-grid">
+          <div class="info-item"><label>สถานะ</label><span id="dp-status"></span></div>
+          <div class="info-item"><label>Priority</label><span id="dp-priority"></span></div>
+          <div class="info-item"><label>ผู้แจ้ง</label><span id="dp-req"></span></div>
+          <div class="info-item"><label>เบอร์โทร</label><span id="dp-phone"></span></div>
+          <div class="info-item"><label>แผนก</label><span id="dp-dept"></span></div>
+          <div class="info-item"><label>บริษัท/กลุ่ม</label><span id="dp-group"></span></div>
+          <div class="info-item"><label>หมวดหมู่</label><span id="dp-cat"></span></div>
+          <div class="info-item"><label>รายการ/อุปกรณ์</label><span id="dp-item"></span></div>
+          <div class="info-item"><label>ลักษณะงาน</label><span id="dp-case"></span></div>
+          <div class="info-item"><label>ช่องทางรับเคส</label><span id="dp-job"></span></div>
+          <div class="info-item"><label>วันที่แจ้ง</label><span id="dp-date"></span></div>
+          <div class="info-item"><label>เจ้าหน้าที่</label><span id="dp-agent"></span></div>
+          <div class="info-item"><label>เวลาเปิดเคส</label><span id="dp-open-time"></span></div>
+          <div class="info-item"><label>เวลาปิดเคส</label><span id="dp-close-time"></span></div>
+          <div class="info-item" style="grid-column:span 2"><label>ระยะเวลา (นาที)</label><span id="dp-duration"></span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">รายละเอียดปัญหา</div>
+        <p style="font-size:13.5px;color:#94a3b8;line-height:1.7" id="dp-desc"></p>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">วิธีการแก้ไข / Resolution</div>
+        <p style="font-size:13.5px;color:#94a3b8;line-height:1.7" id="dp-resolution"></p>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">เปลี่ยนสถานะ</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Open')">🔵 Open</button>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Pending')">🟡 Pending</button>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Resolved')">🟢 Resolved</button>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Closed')">⚫ Closed</button>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">ประวัติการดำเนินการ</div>
+        <div id="dp-timeline"></div>
       </div>
     </div>
-    <div class="detail-section">
-      <div class="detail-section-title">รายละเอียดปัญหา</div>
-      <p style="font-size:13.5px;color:#94a3b8;line-height:1.7" id="dp-desc"></p>
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">วิธีการแก้ไข / Resolution</div>
-      <p style="font-size:13.5px;color:#94a3b8;line-height:1.7" id="dp-resolution"></p>
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">เปลี่ยนสถานะ</div>
-      <!-- Close warning: ต้องกรอก resolution ก่อน -->
-      <div class="close-warning" id="close-warning">
-        ⚠️ กรุณากรอก <b>วิธีการแก้ไข (Resolution)</b> ในช่องด้านล่างก่อนปิดเคส
+    <!-- Edit mode -->
+    <div id="dp-edit-mode" style="display:none">
+      <div class="detail-section">
+        <div class="detail-section-title">✏️ แก้ไขข้อมูลทิกเก็ต</div>
+        <div class="form-group"><label class="form-label">หัวข้อปัญหา</label><input class="edit-field form-input" id="e-title"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ผู้แจ้ง</label><input class="edit-field form-input" id="e-requester"></div>
+          <div class="form-group"><label class="form-label">เบอร์โทร</label><input class="edit-field form-input" id="e-phone"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">แผนก</label><input class="edit-field form-input" id="e-dept"></div>
+          <div class="form-group"><label class="form-label">กลุ่ม/บริษัท</label><input class="edit-field form-input" id="e-group"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">หมวดหมู่</label><input class="edit-field form-input" id="e-cat"></div>
+          <div class="form-group"><label class="form-label">รายการ/อุปกรณ์</label><input class="edit-field form-input" id="e-item"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ลักษณะงาน</label><input class="edit-field form-input" id="e-case"></div>
+          <div class="form-group"><label class="form-label">ช่องทางรับเคส</label><input class="edit-field form-input" id="e-job"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Priority</label>
+            <select class="edit-field form-input form-select" id="e-priority">
+              <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">เจ้าหน้าที่</label><select class="edit-field form-input form-select" id="e-agent"></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">เวลาเปิดเคส</label><input class="edit-field form-input" id="e-open-time"></div>
+          <div class="form-group"><label class="form-label">เวลาปิดเคส</label><input class="edit-field form-input" id="e-close-time"></div>
+        </div>
+        <div class="form-group"><label class="form-label">ระยะเวลา (นาที)</label><input class="edit-field form-input" id="e-duration" type="number"></div>
+        <div class="form-group"><label class="form-label">รายละเอียด</label><textarea class="edit-field form-input" id="e-desc" style="min-height:80px"></textarea></div>
+        <div class="form-group"><label class="form-label">วิธีการแก้ไข / Resolution</label><textarea class="edit-field form-input" id="e-resolution" style="min-height:80px"></textarea></div>
+        <div class="detail-edit-actions">
+          <button class="btn btn-primary" onclick="saveEdit()"><i class="ti ti-check"></i> บันทึกการแก้ไข</button>
+          <button class="btn btn-ghost" onclick="cancelEdit()"><i class="ti ti-x"></i> ยกเลิก</button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Open')">🔵 Open</button>
-        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Pending')">🟡 Pending</button>
-        <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Resolved')">🟢 Resolved</button>
-        <button class="btn btn-ghost" id="btn-close-status" style="font-size:12px" onclick="tryCloseTicket()">⚫ Closed</button>
-      </div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">ประวัติการดำเนินการ</div>
-      <div id="dp-timeline"></div>
     </div>
   </div>
   <div class="comment-box">
-    <!-- Resolution input (แสดงเมื่อต้องการปิดเคส + ใช้เป็น comment ทั่วไปด้วย) -->
-    <div id="resolution-hint" style="font-size:11.5px;color:#fbbf24;margin-bottom:6px;display:none">
-      📝 กรอกวิธีการแก้ไขเพื่อปิดเคส แล้วกด "ปิดเคส"
-    </div>
     <textarea class="comment-input" id="comment-input" placeholder="เพิ่มหมายเหตุหรืออัปเดต..."></textarea>
     <div class="comment-footer">
-      <span style="font-size:11px;color:#475569">กด ส่ง เพื่อบันทึกหมายเหตุ</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-danger" id="btn-confirm-close" style="font-size:12px;padding:6px 12px;display:none" onclick="confirmClose()">
-          <i class="ti ti-lock"></i> ปิดเคส
-        </button>
-        <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="addComment()">
-          <i class="ti ti-send"></i> ส่ง
-        </button>
-      </div>
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px" onclick="addComment()">
+        <i class="ti ti-send"></i> ส่ง
+      </button>
     </div>
   </div>
 </div>
@@ -471,17 +540,15 @@ const CATEGORIES = {
   'อื่นๆ':           ['อื่นๆ']
 };
 const CASES = ['ติดตั้งใหม่','แจ้งซ่อม/มีปัญหา','ขอเพิ่มสิทธิ์','บำรุงรักษา'];
+const PAGE_SIZE = 30;
 
-// ══════════════════════════════════════════════
-// IMPORT: field options + auto-guess
-// ══════════════════════════════════════════════
+// ── Import field options ──
 const FIELD_OPTS = [
   {label:'(ข้ามฟิลด์นี้)',key:''},
   {label:'ID',key:'id'},{label:'วันที่',key:'date'},
   {label:'หมวดหมู่ (Category)',key:'category'},
-  {label:'ช่องทาง (Via)',key:'via'},
-  {label:'ลักษณะงาน (Case)',key:'caseType'},
   {label:'ช่องทางรับเคส',key:'job'},
+  {label:'ลักษณะงาน (Case)',key:'caseType'},
   {label:'เวลาเปิดเคส',key:'openTime'},
   {label:'เบอร์โทร (Phone)',key:'phone'},
   {label:'ผู้แจ้ง (Requester)',key:'requester'},
@@ -500,9 +567,8 @@ const GUESS_RULES = [
   [['id','รหัส'],'id'],
   [['วันที่','date'],'date'],
   [['หมวดหมู่','categ','category'],'category'],
-  [['ช่องทาง','via'],'via'],
+  [['ช่องทาง','via','job','ช่องทางรับ'],'job'],
   [['ลักษณะงาน','case type','casetype'],'caseType'],
-  [['ช่องทางรับเคส','รับเคส'],'job'],
   [['เวลาเปิด','open time','opentime'],'openTime'],
   [['เบอร์','phone','tel','โทร'],'phone'],
   [['ผู้แจ้ง','requester','reporter','ชื่อ'],'requester'],
@@ -525,7 +591,7 @@ function guessField(col) {
 }
 
 // ══════════════════════════════════════════════
-// STATE  — โหลดจาก localStorage ทันที
+// STATE
 // ══════════════════════════════════════════════
 let lang = 'th', L = null;
 let tickets = JSON.parse(localStorage.getItem(LS_TICKETS) || '[]');
@@ -537,13 +603,14 @@ let agents  = JSON.parse(localStorage.getItem(LS_AGENTS)  || 'null') || [
 let currentFilter = 'All', currentTicketId = null;
 let ticketCounter = 1;
 let importRows = [], importColMap = {};
-let pendingClose = false;   // flag สำหรับ close-flow
+// Sort state
+let sortField = 'date', sortDir = 'desc'; // desc = ใหม่ไปเก่า
+// Pagination
+let currentPage = 1;
 
-// ── helper: บันทึกลง localStorage ──
 function saveTickets(){ localStorage.setItem(LS_TICKETS, JSON.stringify(tickets)); }
 function saveAgents(){  localStorage.setItem(LS_AGENTS,  JSON.stringify(agents));  }
 
-// ── update counter ให้สูงกว่า ID ทุกตัวในระบบ ──
 function recalcCounter(){
   const max = tickets.reduce((m,t)=>{
     const n = parseInt((t.id||'').replace(/[^\d]/g,''))||0; return Math.max(m,n);
@@ -584,7 +651,7 @@ const LANG = {
     toastStatus:s=>`อัปเดตสถานะเป็น ${s}`,
     toastComment:'เพิ่มหมายเหตุเรียบร้อย',
     toastValidation:'กรุณากรอกหัวข้อและชื่อผู้แจ้ง',
-    toastNeedResolution:'กรุณากรอกวิธีการแก้ไขก่อนปิดเคส',
+    toastSaved:'บันทึกการแก้ไขเรียบร้อย',
     statusChanged:(o,n)=>`เปลี่ยนสถานะ ${o} → ${n}`,
     online:'ออนไลน์',offline:'ออฟไลน์',
     agentTickets:'ทิกเก็ต',agentResolved:'แก้แล้ว',agentPending:'ค้างอยู่',
@@ -592,7 +659,8 @@ const LANG = {
     agentRemoved:n=>`ลบ ${n} ออกจากระบบแล้ว`,
     confirmRemove:n=>`ยืนยันลบ "${n}" ออกจากระบบ?`,
     confirmDeleteTicket:'ยืนยันลบทิกเก็ตนี้ออกจากระบบ?',
-    viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'}
+    viewTitles:{dashboard:'แดชบอร์ด',tickets:'ทิกเก็ตทั้งหมด',agents:'ทีม & เจ้าหน้าที่'},
+    page:'หน้า', of:'จาก', results:'รายการ'
   },
   en:{
     portal:'IT Support Portal',overview:'Overview',dashboard:'Dashboard',
@@ -622,7 +690,7 @@ const LANG = {
     toastStatus:s=>`Status updated to ${s}`,
     toastComment:'Note added',
     toastValidation:'Please enter subject and requester',
-    toastNeedResolution:'Please enter resolution before closing',
+    toastSaved:'Changes saved',
     statusChanged:(o,n)=>`Status ${o} → ${n}`,
     online:'Online',offline:'Offline',
     agentTickets:'Tickets',agentResolved:'Resolved',agentPending:'Pending',
@@ -630,7 +698,8 @@ const LANG = {
     agentRemoved:n=>`${n} removed`,
     confirmRemove:n=>`Remove "${n}"?`,
     confirmDeleteTicket:'Delete this ticket?',
-    viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'}
+    viewTitles:{dashboard:'Dashboard',tickets:'All Tickets',agents:'Team & Agents'},
+    page:'Page', of:'of', results:'results'
   }
 };
 
@@ -655,18 +724,13 @@ function showToast(msg, type='info'){
   toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// ── วันที่ format: DD/MM/YYYY (ไทย) ──
-// รับ string หลายรูปแบบ → คืน dd/mm/yyyy
 function formatThaiDate(raw){
   if(!raw) return '';
-  // ถ้าเป็น Excel serial number
   if(!isNaN(raw) && raw>40000 && raw<60000){
     const d=new Date(Math.round((+raw-25569)*864e5));
     return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543}`;
   }
-  // dd/mm/yyyy หรือ dd-mm-yyyy แล้ว
   if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(raw)) return raw.replace(/-/g,'/');
-  // yyyy-mm-dd (ISO)
   const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if(iso) return `${iso[3]}/${iso[2]}/${+iso[1]+543}`;
   return raw;
@@ -678,6 +742,32 @@ function today(){
 }
 
 function genId(){ return `TK-${String(ticketCounter).padStart(4,'0')}`; }
+
+// ── sort helpers ──
+const PRIO_ORDER = {Urgent:4,High:3,Medium:2,Low:1};
+function sortedTickets(list){
+  return [...list].sort((a,b)=>{
+    let va, vb;
+    if(sortField==='date'){
+      va = a.timestamp||a.date||''; vb = b.timestamp||b.date||'';
+    } else if(sortField==='id'){
+      va = parseInt((a.id||'').replace(/\D/g,''))||0;
+      vb = parseInt((b.id||'').replace(/\D/g,''))||0;
+    } else if(sortField==='priority'){
+      va = PRIO_ORDER[a.priority]||0; vb = PRIO_ORDER[b.priority]||0;
+    } else if(sortField==='status'){
+      va = a.status||''; vb = b.status||'';
+    }
+    if(va < vb) return sortDir==='asc'?-1:1;
+    if(va > vb) return sortDir==='asc'?1:-1;
+    return 0;
+  });
+}
+function toggleSortDir(){
+  sortDir = sortDir==='desc'?'asc':'desc';
+  el('sort-dir-icon').className = sortDir==='desc'?'ti ti-sort-descending':'ti ti-sort-ascending';
+  currentPage=1; renderTickets();
+}
 
 // ══════════════════════════════════════════════
 // LANG
@@ -733,6 +823,12 @@ function initDropdowns(){
   agSel.innerHTML=`<option value="">${L.noUnassigned}</option>`;
   agents.forEach(a=>agSel.innerHTML+=`<option value="${a.name}">${a.name}</option>`);
   onCategoryChange();
+  // Also update edit agent select
+  const eAgSel=el('e-agent');
+  if(eAgSel){
+    eAgSel.innerHTML=`<option value="">${L.noUnassigned}</option>`;
+    agents.forEach(a=>eAgSel.innerHTML+=`<option value="${a.name}">${a.name}</option>`);
+  }
 }
 function onCategoryChange(){
   const cat=el('f-cat').value, itemSel=el('f-item'); itemSel.innerHTML='';
@@ -780,34 +876,64 @@ function updateDashboard(){
     return `<div class="priority-item"><div class="priority-label"><span>${c}</span><span>${cnt}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${catColors[i%catColors.length]}"></div></div></div>`;
   }).join('');
 
-  const recent=[...tickets].reverse().slice(0,5);
+  const recent=[...tickets].sort((a,b)=>(b.timestamp||b.date||'').localeCompare(a.timestamp||a.date||'')).slice(0,5);
   el('recent-tbody').innerHTML=recent.length
     ? recent.map(tk=>ticketRowHTML(tk,false)).join('')
     : `<tr><td colspan="6" style="text-align:center;padding:20px;color:#475569">${L.noTickets}</td></tr>`;
 }
 
 // ══════════════════════════════════════════════
-// TICKETS TABLE
+// TICKETS TABLE + SORT + PAGINATION
 // ══════════════════════════════════════════════
 function renderTickets(){
   if(!L) return;
   const q=(el('search-input').value||'').toLowerCase();
-  const list=tickets.filter(tk=>{
+  const filtered=tickets.filter(tk=>{
     const ms=currentFilter==='All'||(currentFilter==='Urgent'?tk.priority==='Urgent':tk.status===currentFilter);
     const mq=!q||(tk.title+tk.requester+tk.id+tk.category).toLowerCase().includes(q);
     return ms&&mq;
   });
+  const sorted=sortedTickets(filtered);
+  const total=sorted.length;
+  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(currentPage>totalPages) currentPage=totalPages;
+  const start=(currentPage-1)*PAGE_SIZE, end=Math.min(start+PAGE_SIZE,total);
+  const pageItems=sorted.slice(start,end);
+
   const tbody=el('tickets-tbody');
-  tbody.innerHTML=list.length
-    ? [...list].reverse().map(tk=>ticketRowHTML(tk,true)).join('')
+  tbody.innerHTML=pageItems.length
+    ? pageItems.map(tk=>ticketRowHTML(tk,true)).join('')
     : `<tr><td colspan="8" style="text-align:center;padding:32px;color:#475569">${L.noTickets}</td></tr>`;
+
+  renderPagination(total, totalPages);
 }
+
+function renderPagination(total, totalPages){
+  const bar=el('pagination-bar');
+  if(total===0){ bar.innerHTML=''; return; }
+  const start=(currentPage-1)*PAGE_SIZE+1, end=Math.min(currentPage*PAGE_SIZE,total);
+  let html=`<span class="page-info">${start}–${end} ${L.of} ${total} ${L.results}</span>`;
+  html+=`<button class="page-btn" onclick="gotoPage(1)" ${currentPage===1?'disabled':''} title="หน้าแรก">«</button>`;
+  html+=`<button class="page-btn" onclick="gotoPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  // page numbers (show up to 5)
+  let pStart=Math.max(1,currentPage-2), pEnd=Math.min(totalPages,pStart+4);
+  if(pEnd-pStart<4) pStart=Math.max(1,pEnd-4);
+  for(let p=pStart;p<=pEnd;p++){
+    html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="gotoPage(${p})">${p}</button>`;
+  }
+  html+=`<button class="page-btn" onclick="gotoPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  html+=`<button class="page-btn" onclick="gotoPage(${totalPages})" ${currentPage===totalPages?'disabled':''} title="หน้าสุดท้าย">»</button>`;
+  bar.innerHTML=html;
+}
+
+function gotoPage(p){ currentPage=p; renderTickets(); }
+
 function setFilter(status,btn){
-  currentFilter=status;
+  currentFilter=status; currentPage=1;
   if(btn){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
   renderTickets();
 }
-function filterTickets(){ renderTickets(); }
+function filterTickets(){ currentPage=1; renderTickets(); }
 
 function prioTag(p){ const m={Urgent:'urgent',High:'high',Medium:'medium',Low:'low'}; return `<span class="tag tag-${m[p]||'medium'}">${p||'Medium'}</span>`; }
 function statTag(s){ const m={Open:'open',Pending:'pending',Resolved:'resolved',Closed:'closed'}; return `<span class="tag tag-${m[s]||'open'}">${s||'Open'}</span>`; }
@@ -818,7 +944,7 @@ function agentPill(name){
 }
 
 function ticketRowHTML(tk,showCat){
-  const delBtn=showCat?`<td><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;color:#f87171;border-color:#f87171" onclick="event.stopPropagation();deleteTicket('${tk.id}')"><i class="ti ti-trash"></i></button></td>`:'';
+  const delBtn=`<td style="text-align:center"><button class="btn-del" onclick="event.stopPropagation();deleteTicket('${tk.id}')" title="ลบทิกเก็ต"><i class="ti ti-trash"></i></button></td>`;
   if(showCat) return `<tr class="ticket-row" onclick="openDetail('${tk.id}')">
     <td style="padding-left:16px"><span class="tid">${tk.id}</span></td>
     <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tk.title||''}</td>
@@ -833,7 +959,6 @@ function ticketRowHTML(tk,showCat){
     <td>${agentPill(tk.agent)}</td></tr>`;
 }
 
-// ── ลบทิกเก็ต ──
 function deleteTicket(id){
   if(!confirm(L.confirmDeleteTicket)) return;
   tickets=tickets.filter(t=>t.id!==id);
@@ -848,12 +973,12 @@ function deleteTicket(id){
 // ══════════════════════════════════════════════
 function openDetail(id){
   const tk=tickets.find(t=>t.id===id); if(!tk) return;
-  currentTicketId=id; pendingClose=false;
-  el('close-warning').classList.remove('show');
-  el('resolution-hint').style.display='none';
-  el('btn-confirm-close').style.display='none';
+  currentTicketId=id;
   el('comment-input').value='';
-  el('comment-input').placeholder='เพิ่มหมายเหตุหรืออัปเดต...';
+  // reset to view mode
+  el('dp-view-mode').style.display='';
+  el('dp-edit-mode').style.display='none';
+  el('btn-edit-toggle').innerHTML='<i class="ti ti-edit"></i> แก้ไข';
 
   el('dp-id').textContent     = tk.id;
   el('dp-title').textContent  = tk.title||'';
@@ -883,63 +1008,84 @@ function openDetail(id){
 }
 function closeDetail(){
   el('detail-panel').classList.remove('open');
-  currentTicketId=null; pendingClose=false;
+  currentTicketId=null;
 }
 
-// ── เปลี่ยนสถานะ (ไม่ใช่ Closed) ──
+// ── EDIT MODE ──
+function toggleEdit(){
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  const editMode=el('dp-edit-mode').style.display!=='none';
+  if(editMode){ cancelEdit(); return; }
+  // populate edit fields
+  el('e-title').value     = tk.title||'';
+  el('e-requester').value = tk.requester||'';
+  el('e-phone').value     = tk.phone||'';
+  el('e-dept').value      = tk.dept||'';
+  el('e-group').value     = tk.group||'';
+  el('e-cat').value       = tk.category||'';
+  el('e-item').value      = tk.item||'';
+  el('e-case').value      = tk.caseType||'';
+  el('e-job').value       = tk.job||tk.via||'';
+  el('e-priority').value  = tk.priority||'Medium';
+  el('e-open-time').value = tk.openTime||'';
+  el('e-close-time').value= tk.closeTime||'';
+  el('e-duration').value  = tk.duration||'';
+  el('e-desc').value      = tk.desc||'';
+  el('e-resolution').value= tk.resolution||'';
+  // agent select
+  const eAgSel=el('e-agent');
+  eAgSel.innerHTML=`<option value="">— ยังไม่ได้มอบหมาย —</option>`;
+  agents.forEach(a=>eAgSel.innerHTML+=`<option value="${a.name}" ${a.name===tk.agent?'selected':''}>${a.name}</option>`);
+  el('dp-view-mode').style.display='none';
+  el('dp-edit-mode').style.display='';
+  el('btn-edit-toggle').innerHTML='<i class="ti ti-eye"></i> ดูข้อมูล';
+}
+function cancelEdit(){
+  el('dp-view-mode').style.display='';
+  el('dp-edit-mode').style.display='none';
+  el('btn-edit-toggle').innerHTML='<i class="ti ti-edit"></i> แก้ไข';
+}
+function saveEdit(){
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  tk.title      = el('e-title').value.trim();
+  tk.requester  = el('e-requester').value.trim();
+  tk.phone      = el('e-phone').value.trim();
+  tk.dept       = el('e-dept').value.trim();
+  tk.group      = el('e-group').value.trim();
+  tk.category   = el('e-cat').value.trim();
+  tk.item       = el('e-item').value.trim();
+  tk.caseType   = el('e-case').value.trim();
+  tk.job        = el('e-job').value.trim();
+  tk.priority   = el('e-priority').value;
+  tk.agent      = el('e-agent').value;
+  tk.openTime   = el('e-open-time').value.trim();
+  tk.closeTime  = el('e-close-time').value.trim();
+  tk.duration   = el('e-duration').value.trim();
+  tk.desc       = el('e-desc').value.trim();
+  tk.resolution = el('e-resolution').value.trim();
+  tk.timeline   = tk.timeline||[];
+  tk.timeline.push({text:'✏️ แก้ไขข้อมูลทิกเก็ต โดย IT Admin',time:new Date().toLocaleString('th-TH')});
+  saveTickets();
+  cancelEdit();
+  openDetail(tk.id);
+  renderTickets(); updateDashboard();
+  showToast(L.toastSaved,'success');
+}
+
 function changeStatus(s){
   const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  if(s==='Closed'){ tryCloseTicket(); return; }
   const old=tk.status; tk.status=s;
+  if(s==='Closed'){
+    const now=new Date();
+    tk.closeTime=now.toLocaleTimeString('th-TH');
+  }
   tk.timeline=tk.timeline||[];
   tk.timeline.push({text:L.statusChanged(old,s),time:new Date().toLocaleString('th-TH')});
   saveTickets(); openDetail(currentTicketId); renderTickets(); updateDashboard();
   showToast(L.toastStatus(s),'success');
 }
 
-// ── Flow ปิดเคส: ต้องมี resolution ──
-function tryCloseTicket(){
-  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  if(tk.resolution && tk.resolution.trim()){
-    // มี resolution แล้ว → ปิดได้เลย
-    doClose(tk);
-  } else {
-    // ยังไม่มี → แสดง warning + ให้กรอก
-    pendingClose=true;
-    el('close-warning').classList.add('show');
-    el('resolution-hint').style.display='block';
-    el('btn-confirm-close').style.display='inline-flex';
-    el('comment-input').placeholder='กรอกวิธีการแก้ไข / Resolution ที่นี่...';
-    el('comment-input').focus();
-  }
-}
-function confirmClose(){
-  const txt=el('comment-input').value.trim();
-  if(!txt){ showToast(L.toastNeedResolution,'error'); el('comment-input').focus(); return; }
-  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  tk.resolution=txt;
-  el('dp-resolution').textContent=txt;
-  doClose(tk);
-}
-function doClose(tk){
-  const old=tk.status; tk.status='Closed';
-  const now=new Date();
-  tk.closeTime=now.toLocaleTimeString('th-TH');
-  tk.timeline=tk.timeline||[];
-  tk.timeline.push({text:L.statusChanged(old,'Closed'),time:now.toLocaleString('th-TH')});
-  pendingClose=false;
-  el('close-warning').classList.remove('show');
-  el('resolution-hint').style.display='none';
-  el('btn-confirm-close').style.display='none';
-  el('comment-input').value='';
-  el('comment-input').placeholder='เพิ่มหมายเหตุหรืออัปเดต...';
-  saveTickets(); openDetail(tk.id); renderTickets(); updateDashboard();
-  showToast(L.toastStatus('Closed'),'success');
-}
-
-// ── comment ทั่วไป ──
 function addComment(){
-  if(pendingClose){ confirmClose(); return; }
   const txt=el('comment-input').value.trim(); if(!txt) return;
   const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
   tk.timeline=tk.timeline||[];
@@ -1009,7 +1155,7 @@ async function createTicket(){
 }
 
 // ══════════════════════════════════════════════
-// EXPORT CSV
+// EXPORT CSV — fix #3: ดึงเวลาปิดเคสด้วย, fix #7: เอาแค่ job เดียว
 // ══════════════════════════════════════════════
 function openExportModal(){ el('export-modal').classList.add('open'); }
 function closeExportModal(){ el('export-modal').classList.remove('open'); }
@@ -1018,8 +1164,31 @@ function processExportCSV(){
   let list=tickets;
   if(start) list=list.filter(t=>t.timestamp&&t.timestamp>=start);
   if(end)   list=list.filter(t=>t.timestamp&&t.timestamp<=end+'T23:59:59');
-  const headers=['ID','วันที่','หมวดหมู่','ช่องทาง','ลักษณะงาน','ช่องทางรับเคส','เวลาเปิดเคส','เบอร์โทร','ผู้แจ้ง','บริษัท','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','เวลาปิดเคส','ระยะเวลา(นาที)','Priority','สถานะ'];
-  const rows=list.map(t=>[t.id,formatThaiDate(t.date),t.category,t.via||t.job,t.caseType,t.job,t.openTime,t.phone,t.requester,t.group,t.dept,t.agent,t.desc,t.resolution,t.closeTime,t.duration,t.priority,t.status].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  // fix #7: ใช้แค่ "ช่องทางรับเคส" (job) คอลัมน์เดียว
+  const headers=['ID','วันที่','หมวดหมู่','ช่องทางรับเคส','ลักษณะงาน','เวลาเปิดเคส','เบอร์โทร','ผู้แจ้ง','บริษัท/กลุ่ม','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','เวลาปิดเคส','ระยะเวลา(นาที)','Priority','สถานะ'];
+  const rows=list.map(t=>{
+    // fix #3: closeTime — ถ้าไม่มีให้คืนค่าว่าง แต่ต้องดึงให้ครบ
+    const closeTime = t.closeTime || (t.status==='Closed'||t.status==='Resolved' ? (t.closeTime||'') : '');
+    return [
+      t.id,
+      formatThaiDate(t.date),
+      t.category,
+      t.job||t.via||'',   // fix #7: รวมเป็นคอลัมน์เดียว
+      t.caseType,
+      t.openTime,
+      t.phone,
+      t.requester,
+      t.group,
+      t.dept,
+      t.agent,
+      t.desc,
+      t.resolution,
+      closeTime,           // fix #3
+      t.duration,
+      t.priority,
+      t.status
+    ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
+  });
   const csv=[headers.join(','),...rows].join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
@@ -1029,7 +1198,7 @@ function processExportCSV(){
 }
 
 // ══════════════════════════════════════════════
-// IMPORT CSV / EXCEL
+// IMPORT CSV / EXCEL — fix #6: ดึง closeTime กลับมาด้วย
 // ══════════════════════════════════════════════
 function openImportModal(){
   el('import-modal').classList.add('open');
@@ -1096,8 +1265,11 @@ function parseCSVText(text){
 }
 
 function doImport(){
-  const statusMap={'open':'Open','pending':'Pending','resolved':'Resolved','closed':'Closed','กำลังดำเนินการ':'Open','รอดำเนินการ':'Pending','แก้ไขแล้ว':'Resolved','ปิด':'Closed','สำเร็จ':'Resolved','เรียบร้อย':'Resolved','complete':'Resolved','done':'Resolved'};
-  const prioMap={'urgent':'Urgent','high':'High','medium':'Medium','low':'Low','ด่วนมาก':'Urgent','สูง':'High','ปานกลาง':'Medium','ต่ำ':'Low','critical':'Urgent','normal':'Medium'};
+  const statusMap={'open':'Open','pending':'Pending','resolved':'Resolved','closed':'Closed',
+    'กำลังดำเนินการ':'Open','รอดำเนินการ':'Pending','แก้ไขแล้ว':'Resolved','ปิด':'Closed',
+    'สำเร็จ':'Resolved','เรียบร้อย':'Resolved','complete':'Resolved','done':'Resolved'};
+  const prioMap={'urgent':'Urgent','high':'High','medium':'Medium','low':'Low',
+    'ด่วนมาก':'Urgent','สูง':'High','ปานกลาง':'Medium','ต่ำ':'Low','critical':'Urgent','normal':'Medium'};
   let added=0, skipped=0;
 
   importRows.forEach(row=>{
@@ -1119,13 +1291,16 @@ function doImport(){
       requester:mapped.requester||'', phone:mapped.phone||'',
       dept:mapped.dept||'', group:mapped.group||'',
       category:mapped.category||'', item:mapped.item||'',
-      caseType:mapped.caseType||'', via:mapped.via||'',
-      job:mapped.job||mapped.via||'', agent:mapped.agent||'',
+      caseType:mapped.caseType||'',
+      job:mapped.job||'',   // fix #6 + #7: เก็บแค่ job
+      agent:mapped.agent||'',
       desc:mapped.desc||'', resolution:mapped.resolution||'',
       date:formatThaiDate(mapped.date)||today(),
-      openTime:mapped.openTime||'', closeTime:mapped.closeTime||'',
+      openTime:mapped.openTime||'',
+      closeTime:mapped.closeTime||'',   // fix #6: เก็บ closeTime ด้วย
       duration:mapped.duration||'',
       priority, status,
+      timestamp: mapped.date ? new Date().toISOString() : new Date().toISOString(),
       timeline:[{text:'นำเข้าจากไฟล์ Excel/CSV',time:new Date().toLocaleString('th-TH')}]
     });
     const num=parseInt((id||'').replace(/[^\d]/g,''))||0;
@@ -1138,7 +1313,7 @@ function doImport(){
 }
 
 // ══════════════════════════════════════════════
-// AGENTS CRUD  — บันทึกลง localStorage
+// AGENTS
 // ══════════════════════════════════════════════
 function renderAgents(){
   if(!L) return;
@@ -1179,7 +1354,7 @@ function saveAgent(){
   if(!name){ el('ag-name').style.borderColor='#f87171'; setTimeout(()=>el('ag-name').style.borderColor='',2000); return; }
   const newAgent={id:'ag'+Date.now(), name, role:el('ag-role').value.trim()||'IT Support', status:el('ag-status').value};
   agents.push(newAgent);
-  saveAgents();            // ✅ บันทึกลง localStorage
+  saveAgents();
   closeAgentModal(); renderAgents(); initDropdowns();
   showToast(L.agentAdded(name),'success');
 }
@@ -1188,16 +1363,15 @@ function removeAgent(agentId){
   const ag=agents.find(a=>a.id===agentId); if(!ag) return;
   if(!confirm(L.confirmRemove(ag.name))) return;
   agents=agents.filter(a=>a.id!==agentId);
-  saveAgents();            // ✅ บันทึกลง localStorage
+  saveAgents();
   renderAgents(); initDropdowns();
   showToast(L.agentRemoved(ag.name),'info');
 }
 
 // ══════════════════════════════════════════════
-// LOAD FROM GOOGLE SHEETS (ถ้ามี)
+// LOAD FROM GOOGLE SHEETS
 // ══════════════════════════════════════════════
 async function loadTicketsFromSheets(){
-  // ถ้ามีข้อมูลใน localStorage อยู่แล้ว ไม่ต้องโหลดทับ
   if(tickets.length>0) return;
   try{
     const res=await fetch(`${GAS_URL}?action=getTickets`);
@@ -1209,13 +1383,14 @@ async function loadTicketsFromSheets(){
         requester:r['ผู้แจ้ง']||'', phone:r['เบอร์โทร']||'',
         dept:r['แผนก']||'', group:r['บริษัท']||r['กลุ่ม/บริษัท']||'',
         category:r['หมวดหมู่']||'', item:r['รายการ']||'',
-        caseType:r['ลักษณะงาน']||'', via:r['ช่องทาง (Via)']||'',
-        job:r['ช่องทางรับเคส']||r['ช่องทาง']||'',
+        caseType:r['ลักษณะงาน']||'',
+        job:r['ช่องทางรับเคส']||r['ช่องทาง (Via)']||r['ช่องทาง']||'',
         agent:r['ผู้รับเรื่อง / ปฏิบัติงาน']||r['Agent']||'',
         desc:r['รายละเอียดทิกเก็ต (Description)']||'',
         resolution:r['วิธีการดําเนินการ (Resolution Action)']||'',
         date:formatThaiDate(r['วันที่']||''),
-        openTime:r['เวลาเปิดเคส']||'', closeTime:r['เวลาปิดเคส (Close Time)']||'',
+        openTime:r['เวลาเปิดเคส']||'',
+        closeTime:r['เวลาปิดเคส (Close Time)']||r['เวลาปิดเคส']||'',
         duration:r['ระยะเวลาดําเนินการ (นาที)']||'',
         priority:r['Priority']||'Medium', status:r['สถานะ']||'Resolved',
         timestamp:r['Timestamp']||'', timeline:[]
