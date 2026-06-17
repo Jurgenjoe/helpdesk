@@ -300,7 +300,7 @@ textarea.form-input{min-height:90px;resize:vertical}
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" id="s-f-phone">เบอร์โทรศัพท์</label>
-          <input class="form-input" id="f-phone" inputmode="tel" onblur="lookupUser()" placeholder="เช่น 1551">
+          <input class="form-input" id="f-phone" inputmode="tel" onblur="lookupUser()" placeholder="เช่น 0812345678">
           <div class="field-hint" id="f-phone-hint"></div>
         </div>
         <div class="form-group">
@@ -540,6 +540,14 @@ textarea.form-input{min-height:90px;resize:vertical}
 // ══════════════════════════════════════════════
 const GAS_URL        = 'https://script.google.com/macros/s/AKfycbzzHWuSgdqM2nA3R0ogXvvsTNAFunLIswJJFc30bpChk5UcAb6o16iWSOhMGk9mBROGmQ/exec';
 const GAS_LOOKUP_URL = 'https://script.google.com/macros/s/AKfycbzMP5LNvXGZakHO0KEsUHUqcAzW1LKnFeW-tz1g-ZGmTO173Kx_Sdv0D2delG2GHuWrnQ/exec';
+// 🔐 Secret Token — ต้องตรงกับที่ตั้งใน Google Apps Script
+const SECRET_TOKEN   = 'HSH_IT_2025_s3cr3t!';
+
+// helper: เรียก GAS พร้อม token เสมอ
+function gasGet(baseUrl, params={}){
+  const p = new URLSearchParams({ token: SECRET_TOKEN, ...params });
+  return fetch(`${baseUrl}?${p}`);
+}
 const LS_TICKETS = 'hsh_tickets_v1';
 const LS_AGENTS  = 'hsh_agents_v1';
 
@@ -1216,7 +1224,7 @@ async function lookupUser(){
   if(!phone){ hint.textContent=''; hint.className='field-hint'; return; }
   hint.textContent='⏳ กำลังค้นหา...'; hint.className='field-hint';
   try{
-    const res=await fetch(`${GAS_LOOKUP_URL}?phone=${encodeURIComponent(phone)}`);
+    const res=await gasGet(GAS_LOOKUP_URL, {phone});
     const data=await res.json();
     console.log('[lookupUser] GAS response:', JSON.stringify(data)); // debug: ดู field จริงใน console
     if(data.success&&data.user){
@@ -1281,7 +1289,7 @@ async function createTicket(){
 
   const btn=el('save-ticket-btn'), span=el('s-save-btn');
   btn.disabled=true; span.innerHTML='<span class="spinner"></span> กำลังบันทึก...';
-  try{ await fetch(`${GAS_URL}?${new URLSearchParams({action:'createTicket',...tkData})}`); }catch(e){}
+  try{ await gasGet(GAS_URL, {action:'createTicket',...tkData}); }catch(e){}
   tickets.push(tkData); ticketCounter++;
   saveTickets(); closeModal(); renderTickets(); updateDashboard();
   showToast(L.toastCreated(newId),'success');
@@ -1548,7 +1556,7 @@ function removeAgent(agentId){
 async function loadTicketsFromSheets(){
   if(tickets.length>0) return;
   try{
-    const res=await fetch(`${GAS_URL}?action=getTickets`);
+    const res=await gasGet(GAS_URL, {action:'getTickets'});
     const data=await res.json();
     if(data.success&&data.tickets&&data.tickets.length){
       tickets=data.tickets.map((r,i)=>({
