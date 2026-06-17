@@ -255,13 +255,7 @@ textarea.form-input{min-height:90px;resize:vertical}
         <button class="filter-btn" onclick="setFilter('Resolved',this)">Resolved</button>
         <button class="filter-btn" onclick="setFilter('Closed',this)">Closed</button>
         <button class="filter-btn" onclick="setFilter('Urgent',this)" style="margin-left:auto">🔴 Urgent</button>
-        <!-- fix #6/#7: เฉพาะ dropdown เรียง, ไม่มี pagination -->
-        <div style="display:flex;align-items:center;gap:6px;margin-left:8px">
-          <span style="font-size:12px;color:#475569">เรียง:</span>
-          <select id="sort-field" class="form-input form-select" style="width:130px;padding:5px 28px 5px 10px;font-size:12px;height:32px" onchange="renderTickets()">
-            <option value="date">วันที่ (ใหม่→เก่า)</option>
-          </select>
-        </div>
+
       </div>
       <div class="card" style="padding:0;overflow:hidden">
         <table class="ticket-table" style="width:100%">
@@ -418,8 +412,8 @@ textarea.form-input{min-height:90px;resize:vertical}
       <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border-color:#1e3a5f;color:#60a5fa" onclick="toggleEdit()" id="btn-edit-toggle">
         <i class="ti ti-edit"></i> แก้ไข
       </button>
-      <!-- fix #2: ปุ่มปิดข้างปุ่มแก้ไข -->
-      <button class="btn btn-ghost" style="padding:6px 10px;background:#1e2540;color:#fff" onclick="closeDetail()"><i class="ti ti-x" style="font-size:16px"></i></button>
+      <!-- ปุ่มปิด panel สไตล์เดียวกับปุ่มแก้ไข -->
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border-color:#475569;color:#94a3b8" onclick="closeDetail()"><i class="ti ti-x"></i> ปิด</button>
     </div>
   </div>
   <div class="detail-body">
@@ -460,12 +454,19 @@ textarea.form-input{min-height:90px;resize:vertical}
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Open')">🔵 Open</button>
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Pending')">🟡 Pending</button>
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatus('Resolved')">🟢 Resolved</button>
-          <!-- fix #1: Closed ต้องใส่ resolution ก่อน -->
+          <!-- ปุ่ม Closed: ถ้ามี resolution แล้วปิดเลย ถ้าไม่มีให้กรอกในกล่องด้านล่าง -->
           <button class="btn btn-ghost" style="font-size:12px" onclick="changeStatusClosed()">⚫ Closed</button>
         </div>
-        <!-- fix #1: คำแนะนำเมื่อยังไม่มี resolution -->
-        <div id="resolution-warning" style="display:none;margin-top:8px" class="resolution-required-note">
-          <i class="ti ti-alert-triangle"></i> กรุณากรอก "วิธีการแก้ไข / Resolution" ในแท็บแก้ไขก่อนปิดเคส
+        <!-- กล่องกรอก Resolution ก่อนปิดเคส (แสดงเมื่อยังไม่มี resolution) -->
+        <div id="resolution-warning" style="display:none;margin-top:12px">
+          <div class="resolution-required-note" style="margin-bottom:8px">
+            <i class="ti ti-alert-triangle"></i> กรุณากรอก "วิธีการแก้ไข / Resolution" แล้วกด "ยืนยันปิดเคส"
+          </div>
+          <textarea id="inline-resolution" class="form-input" style="min-height:80px;font-size:13px;margin-bottom:8px" placeholder="กรอกวิธีการแก้ไขปัญหา..."></textarea>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" style="font-size:12px" onclick="confirmCloseWithResolution()"><i class="ti ti-lock"></i> ยืนยันปิดเคส</button>
+            <button class="btn btn-ghost" style="font-size:12px" onclick="el('resolution-warning').style.display='none'">ยกเลิก</button>
+          </div>
         </div>
       </div>
       <div class="detail-section">
@@ -484,15 +485,15 @@ textarea.form-input{min-height:90px;resize:vertical}
         </div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">แผนก</label><input class="edit-field form-input" id="e-dept"></div>
-          <div class="form-group"><label class="form-label">กลุ่ม/บริษัท</label><input class="edit-field form-input" id="e-group"></div>
+          <div class="form-group"><label class="form-label">กลุ่ม/บริษัท</label><select class="edit-field form-input form-select" id="e-group"></select></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">หมวดหมู่</label><input class="edit-field form-input" id="e-cat"></div>
-          <div class="form-group"><label class="form-label">รายการ/อุปกรณ์</label><input class="edit-field form-input" id="e-item"></div>
+          <div class="form-group"><label class="form-label">หมวดหมู่</label><select class="edit-field form-input form-select" id="e-cat" onchange="onEditCategoryChange()"></select></div>
+          <div class="form-group"><label class="form-label">รายการ/อุปกรณ์</label><select class="edit-field form-input form-select" id="e-item"></select></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">ลักษณะงาน</label><input class="edit-field form-input" id="e-case"></div>
-          <div class="form-group"><label class="form-label">ช่องทางรับเคส</label><input class="edit-field form-input" id="e-job"></div>
+          <div class="form-group"><label class="form-label">ลักษณะงาน</label><select class="edit-field form-input form-select" id="e-case"></select></div>
+          <div class="form-group"><label class="form-label">ช่องทางรับเคส</label><select class="edit-field form-input form-select" id="e-job"></select></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">Priority</label>
@@ -519,7 +520,11 @@ textarea.form-input{min-height:90px;resize:vertical}
   </div>
   <div class="comment-box">
     <textarea class="comment-input" id="comment-input" placeholder="เพิ่มหมายเหตุหรืออัปเดต..."></textarea>
-    <div class="comment-footer">
+    <div class="comment-footer" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8;cursor:pointer">
+        <input type="checkbox" id="close-on-send" style="accent-color:#60a5fa">
+        ปิดเคสพร้อมส่ง
+      </label>
       <button class="btn btn-primary" style="font-size:12px;padding:6px 14px" onclick="addComment()">
         <i class="ti ti-send"></i> ส่ง
       </button>
@@ -724,16 +729,27 @@ function showToast(msg, type='info'){
   toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// fix #5: วันที่เป็น วัน/เดือน/ปี พ.ศ.
+// fix: วันที่เป็น วัน/เดือน/ปี พ.ศ. ทุกรูปแบบ
 function formatThaiDate(raw){
   if(!raw) return '';
+  // Excel serial number
   if(!isNaN(raw) && raw>40000 && raw<60000){
     const d=new Date(Math.round((+raw-25569)*864e5));
     return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543}`;
   }
-  if(/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(raw)) return raw.replace(/-/g,'/');
-  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if(iso) return `${iso[3]}/${iso[2]}/${+iso[1]+543}`;
+  // ISO yyyy-mm-dd
+  const iso=String(raw).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(iso){
+    const y=+iso[1]; const thY=y<2500?y+543:y;
+    return `${iso[3]}/${iso[2]}/${thY}`;
+  }
+  // dd/mm/yyyy or dd-mm-yyyy already Thai BE (>2500) or CE
+  const dmy=String(raw).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(dmy){
+    const dd=dmy[1].padStart(2,'0'), mm=dmy[2].padStart(2,'0');
+    let y=+dmy[3]; if(y<100) y+=2500; else if(y>=100&&y<2500) y+=543;
+    return `${dd}/${mm}/${y}`;
+  }
   return raw;
 }
 
@@ -815,10 +831,31 @@ function initDropdowns(){
     eAgSel.innerHTML=`<option value="">${L.noUnassigned}</option>`;
     agents.forEach(a=>eAgSel.innerHTML+=`<option value="${a.name}">${a.name}</option>`);
   }
+  // populate e-group dropdown ใน edit mode
+  const eGrpSel=el('e-group');
+  if(eGrpSel){
+    eGrpSel.innerHTML=`<option value="">— เลือกกลุ่ม/บริษัท —</option>`;
+    GROUPS.forEach(g=>eGrpSel.innerHTML+=`<option value="${g}">${g}</option>`);
+  }
+  // populate edit mode category/case/job
+  const eCatSel=el('e-cat');
+  if(eCatSel){ eCatSel.innerHTML=''; Object.keys(CATEGORIES).forEach(c=>eCatSel.innerHTML+=`<option value="${c}">${c}</option>`); }
+  onEditCategoryChange();
+  const eCaseSel=el('e-case');
+  if(eCaseSel){ eCaseSel.innerHTML=''; CASES.forEach(c=>eCaseSel.innerHTML+=`<option value="${c}">${c}</option>`); }
+  const eJobSel=el('e-job');
+  if(eJobSel){ eJobSel.innerHTML=''; L.jobOptions.forEach(j=>eJobSel.innerHTML+=`<option value="${j}">${j}</option>`); }
   // fix #5: set default date to today
   const fDate=el('f-date'); if(fDate&&!fDate.value) fDate.value=todayISO();
   const fTime=el('f-opentime'); if(fTime&&!fTime.value) fTime.value=new Date().toTimeString().slice(0,5);
 }
+function onEditCategoryChange(){
+  const cat=el('e-cat')&&el('e-cat').value, itemSel=el('e-item'); if(!itemSel) return;
+  itemSel.innerHTML='';
+  if(cat&&CATEGORIES[cat]) CATEGORIES[cat].forEach(i=>itemSel.innerHTML+=`<option value="${i}">${i}</option>`);
+  else CATEGORIES['อื่นๆ'].forEach(i=>itemSel.innerHTML+=`<option value="${i}">${i}</option>`);
+}
+
 function onCategoryChange(){
   const cat=el('f-cat').value, itemSel=el('f-item'); itemSel.innerHTML='';
   if(CATEGORIES[cat]) CATEGORIES[cat].forEach(i=>itemSel.innerHTML+=`<option value="${i}">${i}</option>`);
@@ -928,10 +965,11 @@ function renderTickets(){
     const mq=!q||(tk.title+tk.requester+tk.id+tk.category+(tk.agent||'')).toLowerCase().includes(q);
     return ms&&mq;
   });
-  // fix #6: เรียงจากใหม่ไปเก่าเสมอ
+  // เรียงตาม ID จากน้อยไปมาก (TK-0001 → TK-0002 ...)
   const sorted=[...filtered].sort((a,b)=>{
-    const va=a.timestamp||a.date||'', vb=b.timestamp||b.date||'';
-    return vb.localeCompare(va);
+    const na=parseInt((a.id||'').replace(/[^\d]/g,''))||0;
+    const nb=parseInt((b.id||'').replace(/[^\d]/g,''))||0;
+    return na-nb;
   });
 
   const tbody=el('tickets-tbody');
@@ -1024,14 +1062,33 @@ function closeDetail(){
   currentTicketId=null;
 }
 
-// fix #1: Closed ต้องมี resolution ก่อน
+// กดปุ่ม Closed: ถ้ามี resolution แล้ว → ปิดเลย / ถ้าไม่มี → แสดงกล่องกรอก
 function changeStatusClosed(){
   const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
-  if(!tk.resolution || !tk.resolution.trim()){
-    el('resolution-warning').style.display='flex';
+  if(tk.resolution && tk.resolution.trim()){
+    // มี resolution อยู่แล้ว → ปิดเคสได้เลย
+    el('resolution-warning').style.display='none';
+    changeStatus('Closed');
+  } else {
+    // ยังไม่มี resolution → แสดงกล่องกรอก
+    el('inline-resolution').value='';
+    el('resolution-warning').style.display='block';
+    setTimeout(()=>el('inline-resolution').focus(), 100);
+  }
+}
+
+// กด "ยืนยันปิดเคส" หลังกรอก resolution ในกล่อง inline
+function confirmCloseWithResolution(){
+  const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  const res=el('inline-resolution').value.trim();
+  if(!res){
+    el('inline-resolution').style.borderColor='#f87171';
+    setTimeout(()=>el('inline-resolution').style.borderColor='',2000);
     showToast(L.toastResolutionRequired,'error');
     return;
   }
+  // บันทึก resolution ลงใน field ของเคส (ไม่ใช่ comment)
+  tk.resolution = res;
   el('resolution-warning').style.display='none';
   changeStatus('Closed');
 }
@@ -1053,11 +1110,25 @@ function changeStatus(s){
 function addComment(){
   const txt=el('comment-input').value.trim(); if(!txt) return;
   const tk=tickets.find(t=>t.id===currentTicketId); if(!tk) return;
+  const doClose=el('close-on-send')&&el('close-on-send').checked;
+  // ถ้าจะปิดเคส ต้องมี resolution ก่อน
+  if(doClose && (!tk.resolution||!tk.resolution.trim())){
+    el('resolution-warning').style.display='flex';
+    showToast(L.toastResolutionRequired,'error');
+    return;
+  }
   tk.timeline=tk.timeline||[];
   tk.timeline.push({text:`💬 ${txt}`,time:new Date().toLocaleString('th-TH')});
   el('comment-input').value='';
-  saveTickets(); openDetail(currentTicketId);
-  showToast(L.toastComment,'success');
+  if(el('close-on-send')) el('close-on-send').checked=false;
+  if(doClose){
+    const old=tk.status; tk.status='Closed';
+    if(!tk.closeTime) tk.closeTime=new Date().toLocaleTimeString('th-TH');
+    tk.timeline.push({text:L.statusChanged(old,'Closed'),time:new Date().toLocaleString('th-TH')});
+  }
+  el('resolution-warning').style.display='none';
+  saveTickets(); openDetail(currentTicketId); renderTickets(); updateDashboard();
+  showToast(doClose?L.toastStatus('Closed'):L.toastComment, doClose?'success':'success');
 }
 
 // ── EDIT MODE ──
@@ -1070,8 +1141,10 @@ function toggleEdit(){
   el('e-requester').value = tk.requester||'';
   el('e-phone').value     = tk.phone||'';
   el('e-dept').value      = tk.dept||'';
+  // e-group เป็น select — populate ก่อนแล้ว set value
+  initDropdowns();
   el('e-group').value     = tk.group||'';
-  el('e-cat').value       = tk.category||'';
+  el('e-cat').value       = tk.category||''; onEditCategoryChange();
   el('e-item').value      = tk.item||'';
   el('e-case').value      = tk.caseType||'';
   el('e-job').value       = tk.job||tk.via||'';
@@ -1100,11 +1173,11 @@ function saveEdit(){
   tk.requester  = el('e-requester').value.trim();
   tk.phone      = el('e-phone').value.trim();
   tk.dept       = el('e-dept').value.trim();
-  tk.group      = el('e-group').value.trim();
-  tk.category   = el('e-cat').value.trim();
-  tk.item       = el('e-item').value.trim();
-  tk.caseType   = el('e-case').value.trim();
-  tk.job        = el('e-job').value.trim();
+  tk.group      = el('e-group').value;
+  tk.category   = el('e-cat').value;
+  tk.item       = el('e-item').value;
+  tk.caseType   = el('e-case').value;
+  tk.job        = el('e-job').value;
   tk.priority   = el('e-priority').value;
   tk.agent      = el('e-agent').value;
   tk.openTime   = el('e-open-time').value.trim();
@@ -1203,36 +1276,50 @@ function openExportModal(){ el('export-modal').classList.add('open'); }
 function closeExportModal(){ el('export-modal').classList.remove('open'); }
 function processExportCSV(){
   const start=el('ext-start-date').value, end=el('ext-end-date').value;
+  // แปลงวันที่ไทย dd/mm/yyyy BE → ISO yyyy-mm-dd CE เพื่อเปรียบเทียบ
+  function thaiDateToISO(raw){
+    if(!raw) return '';
+    const m=String(raw).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if(m){ const y=+m[3]>2500?+m[3]-543:+m[3]; return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
+    return String(raw).slice(0,10);
+  }
   let list=tickets;
-  if(start) list=list.filter(t=>t.timestamp&&t.timestamp>=start);
-  if(end)   list=list.filter(t=>t.timestamp&&t.timestamp<=end+'T23:59:59');
-  // fix #11: คอลัมน์ เวลาเปิดเคส อยู่ก่อน เวลาปิดเคส
-  const headers=['ID','วันที่','หมวดหมู่','ช่องทางรับเคส','ลักษณะงาน','เวลาเปิดเคส','เวลาปิดเคส','ระยะเวลา(นาที)','เบอร์โทร','ผู้แจ้ง','บริษัท/กลุ่ม','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','Priority','สถานะ'];
+  if(start||end){
+    list=list.filter(t=>{
+      // หา ISO date จาก timestamp หรือ date field
+      let iso=(t.timestamp||'').slice(0,10)||thaiDateToISO(t.date);
+      if(!iso) return true;
+      if(start&&iso<start) return false;
+      if(end&&iso>end) return false;
+      return true;
+    });
+  }
+  const headers=['ID','วันที่','หมวดหมู่','ช่องทางรับเคส','ลักษณะงาน','เวลาเปิดเคส','เวลาปิดเคส','ระยะเวลา (นาที)','เบอร์โทร','ผู้แจ้ง','บริษัท/กลุ่ม','แผนก','ผู้รับเรื่อง','รายละเอียด','วิธีแก้ไข','Priority','สถานะ'];
   const rows=list.map(t=>[
     t.id,
     formatThaiDate(t.date),
     t.category,
     t.job||t.via||'',
     t.caseType,
-    t.openTime,      // fix #11
-    t.closeTime||'', // fix #11
-    t.duration,
-    t.phone,
-    t.requester,
-    t.group,
-    t.dept,
-    t.agent,
-    t.desc,
-    t.resolution,
-    t.priority,
-    t.status
+    t.openTime||'',
+    t.closeTime||'',
+    t.duration||'',
+    t.phone||'',
+    t.requester||'',
+    t.group||'',
+    t.dept||'',
+    t.agent||'',
+    t.desc||'',
+    t.resolution||'',
+    t.priority||'',
+    t.status||''
   ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
   const csv=[headers.join(','),...rows].join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download=`HSH_Tickets_${new Date().toISOString().slice(0,10)}.csv`; a.click();
   URL.revokeObjectURL(url); closeExportModal();
-  showToast('✓ ดาวน์โหลด CSV เรียบร้อย','success');
+  showToast(`✓ ดาวน์โหลด CSV เรียบร้อย (${list.length} เคส)`,'success');
 }
 
 // ══════════════════════════════════════════════
